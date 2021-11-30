@@ -13,7 +13,8 @@ background_dataset_path = None
 seed = 1
 image_size = 256
 action_repeat = 1
-intensity=0.5
+intensity = 0.5
+save_video = True
 
 env = dmc2gym.make(domain_name=domain_name,
                        task_name=task_name,
@@ -60,9 +61,10 @@ def main():
 			if cv2.waitKey(100) & 0xFF == ord('q'):
 				return
 			i += 1
-			# if i == 200:
-			# 	video_save('RandomDots_for.mp4')
-			# 	return
+			if save_video:
+				if i == 200:
+					video_save('RandomDots_for.mp4')
+					return
 
 
 if __name__ == '__main__':
