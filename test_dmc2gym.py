@@ -39,7 +39,7 @@ def video_record(env):
 	frames.append(frame)
 
 def video_save(file_name):
-	if not os.path.exist(save_dir):
+	if not os.path.exists(save_dir):
 		os.mkdir(save_dir)
 	path = os.path.join(save_dir, file_name)
 	imageio.mimsave(path, frames, fps=10)
