@@ -98,6 +98,7 @@ class RandomDotsSource(ImageSource):
         self.num_frames = 1000
         self.ground = ground
         self.intensity = intensity
+        self.v = 0.6
         self.x_lim_low = 0.05
         self.x_lim_high = 0.95
         self.y_lim_low = 0.2
@@ -115,31 +116,23 @@ class RandomDotsSource(ImageSource):
             self.colors.append(np.random.rand(3))
             self.positions.append([np.random.uniform(self.x_lim_low, self.x_lim_high), np.random.uniform(self.y_lim_low, self.y_lim_high)])
             self.sizes.append(np.random.uniform(0.7, 1))
-            self.move.append([0, 0])
+            self.move.append(np.random.normal(0, 0.01, 2)*self.v)
 
     def limit_pos(self, i):
-        if self.positions[i][0] < self.x_lim_low:
-            self.positions[i][0] = self.x_lim_low
-            self.move[i][0] = 0
-        elif self.positions[i][0] > self.x_lim_high:
-            self.positions[i][0] = self.x_lim_high
-            self.move[i][0] = 0
-        if self.positions[i][1] < self.y_lim_low:
-            self.positions[i][1] = self.y_lim_low
-            self.move[i][1] = 0
-        elif self.positions[i][1] > self.y_lim_high:
-            self.positions[i][1] = self.y_lim_high
-            self.move[i][1] = 0
+        if not self.x_lim_high >= self.positions[i][0] >= self.x_lim_low:
+            self.move[i][0] = -self.move[i][0]
+        if not self.y_lim_high >= self.positions[i][1] >= self.y_lim_low:
+            self.move[i][1] = -self.move[i][1]
 
     def build_bg(self, w, h):
         self.bg = np.zeros((h, w, 3))
         for i in range(self.num_dots):
-            color, position, size = self.colors[i], self.positions[i], self.sizes[i]
+            color, position, size, move = self.colors[i], self.positions[i], self.sizes[i], self.move[i]
             position = (int(position[0] * w), int(position[1] * h))
             cv2.circle(self.bg, position, int(size * w * self.dots_size), color, -1)
-            self.move[i] = np.random.normal(self.move[i], 0.005, 2)
-            self.move[i] = self.move[i] if np.random.rand() < 0.8 else self.move[i] / 5
-            self.positions[i] += self.move[i]
+            a = np.random.normal(0, 0.01, 2) * 0.02
+            self.move[i] += a
+            self.positions[i] += move
             self.limit_pos(i)
             # self.colors[i] += np.random.normal(1 / 255, 0.005, 3)  # change color
         self.bg *= 255

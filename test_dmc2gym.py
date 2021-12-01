@@ -6,15 +6,15 @@ import imageio
 domain_name = 'cartpole'
 task_name = 'swingup'
 distract_type = 'dots'
-difficulty = 'hard'
+difficulty = 'easy'
 ground = 'forground'
 # background_dataset_path = 'D:/python/DAVIS/JPEGImages/480p/'
 background_dataset_path = None
 seed = 1
 image_size = 256
 action_repeat = 1
-intensity = 0.5
-save_video = True
+intensity = 1
+save_video = False
 
 env = dmc2gym.make(domain_name=domain_name,
                        task_name=task_name,
