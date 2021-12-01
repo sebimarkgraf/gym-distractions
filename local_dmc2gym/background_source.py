@@ -73,7 +73,7 @@ class RandomColorSource(ImageSource):
     def get_image(self, obs):
         self.bg = cv2.resize(self.bg, (obs.shape[1], obs.shape[0]))
         mask = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
-        obs[mask] = self.bg[mask]
+        obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
         return obs
 
 
@@ -86,7 +86,7 @@ class NoiseSource(ImageSource):
         self.bg = np.random.rand(obs.shape[0], obs.shape[1], 3) * self.strength
         self.bg = self.bg.astype(np.uint8)
         mask = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
-        obs[mask] = self.bg[mask]
+        obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
         return obs
 
 
@@ -200,17 +200,18 @@ class RandomVideoSource(ImageSource):
 
         if self.ground == 'forground':
             mask = np.logical_and(self.bg, True)
-            obs[mask] = self.bg[mask]
+            # obs[mask] = self.bg[mask]
 
         elif self.ground == 'background':
             mask = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
-            obs[mask] = self.bg[mask]
+            # obs[mask] = self.bg[mask]
 
         elif self.ground == 'both':
         	mask1 = cv2.resize(self.mask_arr[self.idx], (obs.shape[1], obs.shape[0]))
         	mask1 = np.logical_or(mask1[:, :, 0], mask1[:, :, 1], mask1[:, :, 2])
         	mask2 = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
         	mask = np.logical_or(mask1, mask2)
-        	obs[mask] = self.bg[mask]
+        	# obs[mask] = self.bg[mask]
+        obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
         self.idx += 1
         return obs
