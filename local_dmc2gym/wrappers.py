@@ -104,13 +104,13 @@ class DMCWrapper(core.Env):
             difficulty = 'easy' if difficulty is None else difficulty
             shape2d = (height, width)
             if distract_type == 'color':
-                self._bg_source = background_source.RandomColorSource(shape2d)
+                self._bg_source = background_source.RandomColorSource(shape2d, intensity)
             elif distract_type == 'noise':
-                self._bg_source = background_source.NoiseSource(shape2d)
+                self._bg_source = background_source.NoiseSource(shape2d, intensity)
             elif distract_type == 'dots':
                 self._bg_source = background_source.RandomDotsSource(shape2d, difficulty, ground, intensity)
             elif distract_type == "videos" or background_dataset_path:
-                self._bg_source = background_source.RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val, ground)
+                self._bg_source = background_source.RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
             else:
                 raise Exception("distract_type %s not defined." % distract_type)
 

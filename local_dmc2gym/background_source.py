@@ -61,8 +61,9 @@ class ImageSource(object):
 
 
 class RandomColorSource(ImageSource):
-    def __init__(self, shape):
+    def __init__(self, shape, intensity=1):
         self.shape = shape
+        self.intensity = intensity
         self.bg = np.zeros((self.shape[0], self.shape[1], 3))
         self.reset()
 
@@ -78,9 +79,10 @@ class RandomColorSource(ImageSource):
 
 
 class NoiseSource(ImageSource):
-    def __init__(self, shape, strength=255):
+    def __init__(self, shape, strength=255, intensity=1):
         self.strength = strength
         self.shape = shape
+        self.intensity = intensity
 
     def get_image(self, obs):
         self.bg = np.random.rand(obs.shape[0], obs.shape[1], 3) * self.strength
@@ -157,9 +159,10 @@ class RandomDotsSource(ImageSource):
 
 
 class RandomVideoSource(ImageSource):
-    def __init__(self, shape, difficulty, date_path, train_or_val=None, ground=None):
+    def __init__(self, shape, difficulty, date_path, train_or_val=None, ground=None, intensity=1):
         self.ground = ground
         self.shape = shape
+        self.intensity = intensity
         self.image_paths = get_img_paths(difficulty, date_path, train_or_val)
         self.num_path = len(self.image_paths)
         self.reset()
