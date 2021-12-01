@@ -37,7 +37,7 @@ difficulty                : choice{'easy', 'medium', 'hard'}, default: 'hard'
                             when use 'videos' distract type, set num_video to: 'hard'=all, others the same as 'dots'
 intensity                 : 0-1, default: 1
                             distracting intensity(non-transparency?): 1 is all distrated, 0 is same as original env
-background_dataset_path   : where you put your video/image dataset
+background_dataset_path   : where you put your video/image dataset, only useful for 'videos'
 train_or_val              : choice{'train', 'val'}, default: None
                             when use DAVIS Dataset, can divided it to train-set and validation-set
 ```
