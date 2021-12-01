@@ -43,3 +43,8 @@ train_or_val              : choice{'train', 'val'}, default: None
 ```
 when you use 'dots', if you want to modify sizes/velocitys/positions/quantity/or some others of dots,  
 you can modify them in file 'background_source.py', class 'RandomDotsSource' by yourself.
+
+you can modify 'test_dmc2gym.py' and test.
+```
+python test_dmc2gym.py
+```
