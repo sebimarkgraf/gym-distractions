@@ -120,12 +120,13 @@ class DMCWrapper(core.Env):
     def __getattr__(self, name):
         return getattr(self._env, name)
 
-    def _get_obs(self, time_step):
+    def _get_obs(self, time_step, action=None):
         if self._from_pixels:
             obs = self.render(
                 height=self._height,
                 width=self._width,
-                camera_id=self._camera_id
+                camera_id=self._camera_id,
+                action=action
             )
             if self._channels_first:
                 obs = obs.transpose(2, 0, 1).copy()
@@ -172,7 +173,7 @@ class DMCWrapper(core.Env):
             done = time_step.last()
             if done:
                 break
-        obs = self._get_obs(time_step)
+        obs = self._get_obs(time_step, action)
         self.current_state = _flatten_obs(time_step.observation)
         extra['discount'] = time_step.discount
         return obs, reward, done, extra
@@ -183,12 +184,12 @@ class DMCWrapper(core.Env):
         obs = self._get_obs(time_step)
         return obs
 
-    def render(self, mode='rgb_array', height=None, width=None, camera_id=0):
+    def render(self, mode='rgb_array', height=None, width=None, camera_id=0, action=None):
         assert mode == 'rgb_array', 'only support rgb_array mode, given %s' % mode
         height = height or self._height
         width = width or self._width
         camera_id = camera_id or self._camera_id
         obs = self._env.physics.render(height=height, width=width, camera_id=camera_id)
         if self._bg_source:
-            obs = self._bg_source.get_image(obs) 
+            obs = self._bg_source.get_image(obs, action) 
         return obs

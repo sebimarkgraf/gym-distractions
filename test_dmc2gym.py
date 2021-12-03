@@ -2,12 +2,13 @@ import local_dmc2gym as dmc2gym
 import cv2
 import os
 import imageio
+import numpy as np
 
 domain_name = 'cartpole'
 task_name = 'swingup'
 distract_type = 'dots'
 difficulty = 'easy'
-ground = 'forground'
+ground = 'background'
 # background_dataset_path = 'D:/python/DAVIS/JPEGImages/480p/'
 background_dataset_path = None
 seed = 1
@@ -15,6 +16,7 @@ image_size = 256
 action_repeat = 1
 intensity = 1
 save_video = False
+np.random.seed(seed)
 
 env = dmc2gym.make(domain_name=domain_name,
                        task_name=task_name,
@@ -58,7 +60,7 @@ def main():
 			obs, reward, done, info = env.step(action)
 			video_record(env)
 			cv2.imshow('env', img)
-			if cv2.waitKey(100) & 0xFF == ord('q'):
+			if cv2.waitKey(10) & 0xFF == ord('q'):
 				return
 			i += 1
 			if save_video:
