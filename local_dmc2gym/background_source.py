@@ -71,7 +71,7 @@ class RandomColorSource(ImageSource):
         self._color = np.random.randint(0, 256, size=(3,))
         self.bg[:, :] = self._color
 
-    def get_image(self, obs):
+    def get_image(self, obs, action=None):
         self.bg = cv2.resize(self.bg, (obs.shape[1], obs.shape[0]))
         mask = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
         obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
@@ -84,7 +84,7 @@ class NoiseSource(ImageSource):
         self.shape = shape
         self.intensity = intensity
 
-    def get_image(self, obs):
+    def get_image(self, obs, action=None):
         self.bg = np.random.rand(obs.shape[0], obs.shape[1], 3) * self.strength
         self.bg = self.bg.astype(np.uint8)
         mask = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
@@ -97,10 +97,10 @@ class RandomDotsSource(ImageSource):
         self.shape = shape
         num_dots = DIFFICULTY_NUM_VIDEOS[difficulty]
         self.num_dots = num_dots if num_dots else 16
-        self.num_frames = 1000
+        self.num_frames = -1
         self.ground = ground
         self.intensity = intensity
-        self.v = 0.6
+        self.v = 0.3
         self.x_lim_low = 0.05
         self.x_lim_high = 0.95
         self.y_lim_low = 0.2
@@ -126,25 +126,26 @@ class RandomDotsSource(ImageSource):
         if not self.y_lim_high >= self.positions[i][1] >= self.y_lim_low:
             self.move[i][1] = -self.move[i][1]
 
-    def build_bg(self, w, h):
+    def build_bg(self, w, h, action=None):
         self.bg = np.zeros((h, w, 3))
         for i in range(self.num_dots):
             color, position, size, move = self.colors[i], self.positions[i], self.sizes[i], self.move[i]
             position = (int(position[0] * w), int(position[1] * h))
             cv2.circle(self.bg, position, int(size * w * self.dots_size), color, -1)
-            a = np.random.normal(0, 0.01, 2) * 0.02
-            self.move[i] += a
-            self.positions[i] += move
-            self.limit_pos(i)
-            # self.colors[i] += np.random.normal(1 / 255, 0.005, 3)  # change color
+            if action is not None:
+                # a = np.random.normal(0, 0.01, 2) * 0.01 if np.random.uniform() < 0.1 else 0
+                # self.move[i] += a
+                self.positions[i] += move
+                self.limit_pos(i)
+                # self.colors[i] += np.random.normal(1 / 255, 0.005, 3)  # change color
         self.bg *= 255
         self.bg = self.bg.astype(np.uint8)
 
-    def get_image(self, obs):
+    def get_image(self, obs, action=None):
         if self.idx == self.num_frames:
             self.reset()
         h, w, _ = obs.shape
-        self.build_bg(w, h)
+        self.build_bg(w, h, action)
 
         if self.ground == 'forground':
             mask = np.logical_or(self.bg[:, :, 0] > 0, self.bg[:, :, 1] > 0, self.bg[:, :, 2] > 0)
@@ -154,7 +155,8 @@ class RandomDotsSource(ImageSource):
             mask2 = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
             mask = np.logical_and(mask1, mask2)
         obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
-        self.idx += 1
+        if action is not None:
+            self.idx += 1
         return obs
 
 
@@ -190,7 +192,7 @@ class RandomVideoSource(ImageSource):
         self._loc = np.random.randint(0, self.num_path)
         self.build_bg_arr()
 
-    def get_image(self, obs):
+    def get_image(self, obs, action=None):
         if self.idx == len(self.image_files):
             self.reset()
 
@@ -216,5 +218,6 @@ class RandomVideoSource(ImageSource):
         	mask = np.logical_or(mask1, mask2)
         	# obs[mask] = self.bg[mask]
         obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
-        self.idx += 1
+        if action is not None:
+            self.idx += 1
         return obs
