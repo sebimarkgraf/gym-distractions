@@ -3,6 +3,7 @@ import cv2
 import random
 import tqdm
 import os
+import copy
 
 DIFFICULTY_SCALE = dict(easy=0.1, medium=0.2, hard=0.3)
 DIFFICULTY_NUM_VIDEOS = dict(easy=5, medium=8, hard=None)
@@ -29,6 +30,8 @@ DAVIS17_VALIDATION_VIDEOS = [
     'shooting', 'soapbox'
 ]
 
+def compute_a(i, positions, sizes):
+    pass
 
 def get_img_paths(difficulty, date_path, train_or_val=None):
     num_frames = DIFFICULTY_NUM_VIDEOS[difficulty]
@@ -97,7 +100,7 @@ class RandomDotsSource(ImageSource):
         self.shape = shape
         num_dots = DIFFICULTY_NUM_VIDEOS[difficulty]
         self.num_dots = num_dots if num_dots else 16
-        self.num_frames = -1            # after num_frames steps reset sizes, positions, colors, velocities of dots, -1 means no reset.
+        self.num_frames = 1000            # after num_frames steps reset sizes, positions, colors, velocities of dots, -1 means no reset.
         self.ground = ground
         self.intensity = intensity
         self.v = 0.3
@@ -108,33 +111,37 @@ class RandomDotsSource(ImageSource):
         self.dots_size = 0.07
         self.reset()
 
-    def reset(self):
+    def reset(self, new=True):
         self.idx = 0
-        self.colors = []
-        self.positions = []
-        self.sizes = []
-        self.move = []
-        for i in range(self.num_dots):
-            self.colors.append(np.random.rand(3))
-            self.positions.append([np.random.uniform(self.x_lim_low, self.x_lim_high), np.random.uniform(self.y_lim_low, self.y_lim_high)])
-            self.sizes.append(np.random.uniform(0.7, 1))
-            self.move.append(np.random.normal(0, 0.01, 2)*self.v)
+        if new:
+            colors = []
+            positions = []
+            sizes = []
+            velocities = []
+            for i in range(self.num_dots):
+                colors.append(np.random.rand(3))
+                positions.append([np.random.uniform(self.x_lim_low, self.x_lim_high), np.random.uniform(self.y_lim_low, self.y_lim_high)])
+                sizes.append(np.random.uniform(0.7, 1))
+                velocities.append(np.random.normal(0, 0.01, 2)*self.v)
+            self.dots_info = (colors, positions, sizes, velocities)
+        self.colors, self.positions, self.sizes, self.velocities = copy.deepcopy(self.dots_info)
 
     def limit_pos(self, i):
         if not self.x_lim_high >= self.positions[i][0] >= self.x_lim_low:
-            self.move[i][0] = -self.move[i][0]
+            self.velocities[i][0] = -self.velocities[i][0]
         if not self.y_lim_high >= self.positions[i][1] >= self.y_lim_low:
-            self.move[i][1] = -self.move[i][1]
+            self.velocities[i][1] = -self.velocities[i][1]
 
     def build_bg(self, w, h, action=None):
         self.bg = np.zeros((h, w, 3))
         for i in range(self.num_dots):
-            color, position, size, move = self.colors[i], self.positions[i], self.sizes[i], self.move[i]
+            color, position, size, move = self.colors[i], self.positions[i], self.sizes[i], self.velocities[i]
             position = (int(position[0] * w), int(position[1] * h))
             cv2.circle(self.bg, position, int(size * w * self.dots_size), color, -1)
             if action is not None:
                 # a = np.random.normal(0, 0.01, 2) * 0.01 if np.random.uniform() < 0.1 else 0
-                # self.move[i] += a
+                # a = compute_a(i, self.positions, self.sizes)
+                # self.velocities[i] += a
                 self.positions[i] += move
                 self.limit_pos(i)
                 # self.colors[i] += np.random.normal(1 / 255, 0.005, 3)  # change color
@@ -143,7 +150,7 @@ class RandomDotsSource(ImageSource):
 
     def get_image(self, obs, action=None):
         if self.idx == self.num_frames:
-            self.reset()
+            self.reset(new=False)               # if new=True, will random reset dots, else will reset dots the same as the first time(distractors repeated).
         h, w, _ = obs.shape
         self.build_bg(w, h, action)
 
