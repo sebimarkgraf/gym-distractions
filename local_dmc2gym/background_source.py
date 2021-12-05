@@ -7,8 +7,9 @@ import copy
 
 DIFFICULTY_SCALE = dict(easy=0.1, medium=0.2, hard=0.3)
 DIFFICULTY_NUM_VIDEOS = dict(easy=5, medium=8, hard=None)
+GRAVITATIONAL_CONSTANT = dict(Planet=1, Electrons=-1, IdealGas=0)
 
-DAVIS17_TRAINING_VIDEOS = [
+TRAINING_VIDEOS = [
     'bear', 'bmx-bumps', 'boat', 'boxing-fisheye', 'breakdance-flare', 'bus',
     'car-turn', 'cat-girl', 'classic-car', 'color-run', 'crossing',
     'dance-jump', 'dancing', 'disc-jockey', 'dog-agility', 'dog-gooses',
@@ -21,7 +22,7 @@ DAVIS17_TRAINING_VIDEOS = [
     'snowboard', 'soccerball', 'stroller', 'stunt', 'surf', 'swing', 'tennis',
     'tractor-sand', 'train', 'tuk-tuk', 'upside-down', 'varanus-cage', 'walking'
 ]
-DAVIS17_VALIDATION_VIDEOS = [
+VALIDATION_VIDEOS = [
     'bike-packing', 'blackswan', 'bmx-trees', 'breakdance', 'camel',
     'car-roundabout', 'car-shadow', 'cows', 'dance-twirl', 'dog', 'dogs-jump',
     'drift-chicane', 'drift-straight', 'goat', 'gold-fish', 'horsejump-high',
@@ -30,17 +31,24 @@ DAVIS17_VALIDATION_VIDEOS = [
     'shooting', 'soapbox'
 ]
 
-def compute_a(i, positions, sizes):
-    pass
+def compute_a(i, positions, sizes, type):
+    relative_positions = positions - positions[i]
+    distances = np.linalg.norm(relative_positions, axis=1, keepdims=True)
+    distances[i] = 1
+
+    force_vectors = relative_positions * GRAVITATIONAL_CONSTANT[type] * (sizes[:,None] ** 2) /(distances ** 2)
+    accelerations = 0.00001 * np.sum(force_vectors, axis=0)
+
+    return accelerations
 
 def get_img_paths(difficulty, date_path, train_or_val=None):
     num_frames = DIFFICULTY_NUM_VIDEOS[difficulty]
     if train_or_val is None:
         dataset_images = sorted(os.listdir(date_path))
     elif train_or_val in ['trian', 'training']:
-        dataset_images = DAVIS17_TRAINING_VIDEOS
+        dataset_images = TRAINING_VIDEOS
     elif train_or_val in ['val', 'validation']:
-        dataset_images = DAVIS17_VALIDATION_VIDEOS
+        dataset_images = VALIDATION_VIDEOS
     else:
         raise Exception("train_or_val %s not defined." % train_or_val)
 
@@ -109,6 +117,7 @@ class RandomDotsSource(ImageSource):
         self.y_lim_low = 0.2
         self.y_lim_high = 0.8
         self.dots_size = 0.07
+        self.gravity_type = 'IdealGas'
         self.reset()
 
     def reset(self, new=True):
@@ -140,8 +149,8 @@ class RandomDotsSource(ImageSource):
             cv2.circle(self.bg, position, int(size * w * self.dots_size), color, -1)
             if action is not None:
                 # a = np.random.normal(0, 0.01, 2) * 0.01 if np.random.uniform() < 0.1 else 0
-                # a = compute_a(i, self.positions, self.sizes)
-                # self.velocities[i] += a
+                a = compute_a(i, np.array(self.positions), np.array(self.sizes), self.gravity_type)
+                self.velocities[i] += a
                 self.positions[i] += move
                 self.limit_pos(i)
                 # self.colors[i] += np.random.normal(1 / 255, 0.005, 3)  # change color
