@@ -41,7 +41,9 @@ background_dataset_path   : where you put your video/image dataset, only useful 
 train_or_val              : choice{'train', 'val'}, default: None
                             when use DAVIS Dataset, can divided it to train-set and validation-set
 ```
-when you use 'dots', if you want to modify sizes/velocitys/positions/quantity/or some others of dots,  
+when you use 'dots', by default, distractors are repeated, and movements of dots obey the dynamics of 
+an ideal gas with no collison. If you want to change those default settings, or you want to modify
+sizes/velocitys/positions/quantity/or some others of dots, 
 you can modify them in file 'background_source.py', class 'RandomDotsSource' by yourself.
 
 you can modify 'test_dmc2gym.py' and test.
