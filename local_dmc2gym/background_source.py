@@ -1,7 +1,5 @@
 import numpy as np
 import cv2
-import random
-import tqdm
 import os
 import copy
 
@@ -31,15 +29,17 @@ VALIDATION_VIDEOS = [
     'shooting', 'soapbox'
 ]
 
+
 def compute_a(i, positions, sizes, type):
     relative_positions = positions - positions[i]
     distances = np.linalg.norm(relative_positions, axis=1, keepdims=True)
     distances[i] = 1
 
-    force_vectors = relative_positions * GRAVITATIONAL_CONSTANT[type] * (sizes[:,None] ** 2) /(distances ** 2)
+    force_vectors = relative_positions * GRAVITATIONAL_CONSTANT[type] * (sizes ** 2) / (distances ** 2)
     accelerations = 0.00001 * np.sum(force_vectors, axis=0)
 
     return accelerations
+
 
 def get_img_paths(difficulty, date_path, train_or_val=None):
     num_frames = DIFFICULTY_NUM_VIDEOS[difficulty]
@@ -108,32 +108,35 @@ class RandomDotsSource(ImageSource):
         self.shape = shape
         num_dots = DIFFICULTY_NUM_VIDEOS[difficulty]
         self.num_dots = num_dots if num_dots else 16
-        self.num_frames = 1000            # after num_frames steps reset sizes, positions, colors, velocities of dots, -1 means no reset.
+        self.num_sets = 1
+        self.num_frames = 1000  # after num_frames steps reset sizes, positions, colors, velocities of dots, -1 means no reset.
         self.ground = ground
         self.intensity = intensity
-        self.v = 0.3
+        self.v = 0.5
         self.x_lim_low = 0.05
         self.x_lim_high = 0.95
-        self.y_lim_low = 0.2
-        self.y_lim_high = 0.8
-        self.dots_size = 0.07
+        self.y_lim_low = 0.05
+        self.y_lim_high = 0.95
+        self.dots_size = 0.08
         self.gravity_type = 'IdealGas'
         self.reset()
 
     def reset(self, new=True):
         self.idx = 0
+        self.set_idx = np.random.randint(0, self.num_sets)
         if new:
-            colors = []
-            positions = []
-            sizes = []
-            velocities = []
-            for i in range(self.num_dots):
-                colors.append(np.random.rand(3))
-                positions.append([np.random.uniform(self.x_lim_low, self.x_lim_high), np.random.uniform(self.y_lim_low, self.y_lim_high)])
-                sizes.append(np.random.uniform(0.7, 1))
-                velocities.append(np.random.normal(0, 0.01, 2)*self.v)
-            self.dots_info = (colors, positions, sizes, velocities)
-        self.colors, self.positions, self.sizes, self.velocities = copy.deepcopy(self.dots_info)
+            self.dots_init = {}
+            self.dots_init['colors'] = np.random.rand(self.num_sets, self.num_dots, 3)
+            self.dots_init['positions'] = np.concatenate(
+                [np.random.uniform(self.x_lim_low, self.x_lim_high, size=(self.num_sets, self.num_dots, 1)),
+                 np.random.uniform(self.y_lim_low, self.y_lim_high, size=(self.num_sets, self.num_dots, 1))], axis=2)
+            self.dots_init['sizes'] = np.random.uniform(0.7, 1, size=(self.num_sets, self.num_dots, 1))
+            self.dots_init['velocities'] = np.random.normal(0, 0.01, size=(self.num_sets, self.num_dots, 2)) * self.v
+        dots_init = copy.deepcopy(self.dots_init)
+        self.colors, self.positions, self.sizes, self.velocities = dots_init['colors'][self.set_idx], \
+                                                                   dots_init['positions'][self.set_idx], \
+                                                                   dots_init['sizes'][self.set_idx], \
+                                                                   dots_init['velocities'][self.set_idx]
 
     def limit_pos(self, i):
         if not self.x_lim_high >= self.positions[i][0] >= self.x_lim_low:
@@ -159,7 +162,8 @@ class RandomDotsSource(ImageSource):
 
     def get_image(self, obs, action=None):
         if self.idx == self.num_frames:
-            self.reset(new=False)               # if new=True, will random reset dots, else will reset dots the same as the first time(distractors repeated).
+            self.reset(
+                new=False)  # if new=True, will random reset dots, else will reset dots the same as the first time(distractors repeated).
         h, w, _ = obs.shape
         self.build_bg(w, h, action)
 
@@ -201,7 +205,7 @@ class RandomVideoSource(ImageSource):
                 img0[mask] = img[mask]
                 self.mask_arr.append(img0)
             if not self.ground == 'forground':
-            	self.bg_arr.append(img)
+                self.bg_arr.append(img)
 
     def reset(self):
         self.idx = 0
@@ -213,10 +217,10 @@ class RandomVideoSource(ImageSource):
             self.reset()
 
         if self.ground == 'forground':
-        	self.bg = self.mask_arr[self.idx]
+            self.bg = self.mask_arr[self.idx]
         else:
-        	self.bg = self.bg_arr[self.idx]
-        
+            self.bg = self.bg_arr[self.idx]
+
         self.bg = cv2.resize(self.bg, (obs.shape[1], obs.shape[0]))
 
         if self.ground == 'forground':
@@ -228,11 +232,11 @@ class RandomVideoSource(ImageSource):
             # obs[mask] = self.bg[mask]
 
         elif self.ground == 'both':
-        	mask1 = cv2.resize(self.mask_arr[self.idx], (obs.shape[1], obs.shape[0]))
-        	mask1 = np.logical_or(mask1[:, :, 0], mask1[:, :, 1], mask1[:, :, 2])
-        	mask2 = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
-        	mask = np.logical_or(mask1, mask2)
-        	# obs[mask] = self.bg[mask]
+            mask1 = cv2.resize(self.mask_arr[self.idx], (obs.shape[1], obs.shape[0]))
+            mask1 = np.logical_or(mask1[:, :, 0], mask1[:, :, 1], mask1[:, :, 2])
+            mask2 = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
+            mask = np.logical_or(mask1, mask2)
+            # obs[mask] = self.bg[mask]
         obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
         if action is not None:
             self.idx += 1

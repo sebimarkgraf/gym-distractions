@@ -8,12 +8,12 @@ domain_name = 'cartpole'
 task_name = 'swingup'
 distract_type = 'dots'
 difficulty = 'easy'
-ground = 'background'
+ground = 'forground'
 # background_dataset_path = 'D:/python/DAVIS/JPEGImages/480p/'
 background_dataset_path = None
 seed = 1
 image_size = 256
-action_repeat = 1
+action_repeat = 2
 intensity = 1
 save_video = False
 np.random.seed(seed)
@@ -60,7 +60,7 @@ def main():
 			obs, reward, done, info = env.step(action)
 			video_record(env)
 			cv2.imshow('env', img)
-			if cv2.waitKey(10) & 0xFF == ord('q'):
+			if cv2.waitKey(1) & 0xFF == ord('q'):
 				return
 			i += 1
 			if save_video:
