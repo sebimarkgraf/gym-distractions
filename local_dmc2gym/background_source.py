@@ -2,9 +2,11 @@ import numpy as np
 import cv2
 import os
 import copy
+import json
+import random
 
 DIFFICULTY_SCALE = dict(easy=0.1, medium=0.2, hard=0.3)
-DIFFICULTY_NUM_VIDEOS = dict(easy=5, medium=8, hard=None)
+DIFFICULTY_NUM_VIDEOS = dict(easy=4, medium=8, hard=None)
 GRAVITATIONAL_CONSTANT = dict(Planet=1, Electrons=-1, IdealGas=0)
 
 TRAINING_VIDEOS = [
@@ -41,10 +43,10 @@ def compute_a(i, positions, sizes, type):
     return accelerations
 
 
-def get_img_paths(difficulty, date_path, train_or_val=None):
+def get_img_paths(difficulty, data_path, train_or_val=None):
     num_frames = DIFFICULTY_NUM_VIDEOS[difficulty]
     if train_or_val is None:
-        dataset_images = sorted(os.listdir(date_path))
+        dataset_images = sorted(os.listdir(data_path))
     elif train_or_val in ['trian', 'training']:
         dataset_images = TRAINING_VIDEOS
     elif train_or_val in ['val', 'validation']:
@@ -52,7 +54,8 @@ def get_img_paths(difficulty, date_path, train_or_val=None):
     else:
         raise Exception("train_or_val %s not defined." % train_or_val)
 
-    image_paths = [os.path.join(date_path, subdir) for subdir in dataset_images]
+    image_paths = [os.path.join(data_path, subdir) for subdir in dataset_images]
+    random.shuffle(image_paths)
     if num_frames is not None:
         if num_frames > len(image_paths) or num_frames < 0:
             raise ValueError(f'`num_bakground_paths` is {num_frames} but should not be larger than the '
@@ -63,12 +66,25 @@ def get_img_paths(difficulty, date_path, train_or_val=None):
 
 
 class ImageSource(object):
+    def __init__(self, intensity=1):
+        self.intensity = intensity
 
     def get_image(self):
         pass
 
     def reset(self):
         pass
+
+    def get_info(self):
+        info = {}
+        info['intensity'] = self.intensity
+        return info
+
+    def save_info(self, path):
+        info = {}
+        info[self.__class__.__name__] = self.get_info()
+        with open(os.path.join(path, 'distractors_info.json'),"w") as f:
+            json.dump(info, f, indent=4)
 
 
 class RandomColorSource(ImageSource):
@@ -81,6 +97,11 @@ class RandomColorSource(ImageSource):
     def reset(self):
         self._color = np.random.randint(0, 256, size=(3,))
         self.bg[:, :] = self._color
+
+    def get_info(self):
+        info = super().get_info()
+        info['color'] = self._color
+        return info
 
     def get_image(self, obs, action=None):
         self.bg = cv2.resize(self.bg, (obs.shape[1], obs.shape[0]))
@@ -95,6 +116,11 @@ class NoiseSource(ImageSource):
         self.shape = shape
         self.intensity = intensity
 
+    def get_info(self):
+        info = super().get_info()
+        info['strength'] = self.strength
+        return info
+
     def get_image(self, obs, action=None):
         self.bg = np.random.rand(obs.shape[0], obs.shape[1], 3) * self.strength
         self.bg = self.bg.astype(np.uint8)
@@ -106,9 +132,9 @@ class NoiseSource(ImageSource):
 class RandomDotsSource(ImageSource):
     def __init__(self, shape, difficulty, ground=None, intensity=1):
         self.shape = shape
-        num_dots = DIFFICULTY_NUM_VIDEOS[difficulty]
-        self.num_dots = num_dots if num_dots else 16
-        self.num_sets = 1
+        num_sets = DIFFICULTY_NUM_VIDEOS[difficulty]
+        self.num_dots = 16
+        self.num_sets = num_sets if num_sets else 16
         self.num_frames = 1000  # after num_frames steps reset sizes, positions, colors, velocities of dots, -1 means no reset.
         self.ground = ground
         self.intensity = intensity
@@ -120,6 +146,19 @@ class RandomDotsSource(ImageSource):
         self.dots_size = 0.08
         self.gravity_type = 'IdealGas'
         self.reset()
+
+    def get_info(self):
+        info = super().get_info()
+        info['ground'] = self.ground
+        info['gravity'] = self.gravity_type
+        info['num_dots'] = self.num_dots
+        info['num_sets'] = self.num_dots
+        info['set_frames'] = self.num_frames
+        info['size'] = self.dots_size
+        info['velocity'] = self.v
+        info['position_limit'] = {'x': (self.x_lim_low, self.x_lim_high), 'y':(self.y_lim_low, self.y_lim_high)}
+        # info['dots'] = {a: self.dots_init[a].tolist() for a in self.dots_init}
+        return info
 
     def reset(self, new=True):
         self.idx = 0
@@ -181,13 +220,19 @@ class RandomDotsSource(ImageSource):
 
 
 class RandomVideoSource(ImageSource):
-    def __init__(self, shape, difficulty, date_path, train_or_val=None, ground=None, intensity=1):
+    def __init__(self, shape, difficulty, data_path, train_or_val=None, ground=None, intensity=1):
         self.ground = ground
         self.shape = shape
         self.intensity = intensity
-        self.image_paths = get_img_paths(difficulty, date_path, train_or_val)
+        self.image_paths = get_img_paths(difficulty, data_path, train_or_val)
         self.num_path = len(self.image_paths)
         self.reset()
+
+    def get_info(self):
+        info = super().get_info()
+        info['ground'] = self.ground
+        info['data_set'] = self.image_paths
+        return info
 
     def build_bg_arr(self):
         self.image_path = self.image_paths[self._loc]

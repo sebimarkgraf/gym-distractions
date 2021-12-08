@@ -193,3 +193,10 @@ class DMCWrapper(core.Env):
         if self._bg_source:
             obs = self._bg_source.get_image(obs, action) 
         return obs
+
+    def save_distractors_info(self, path):
+        if self._bg_source:
+            self._bg_source.save_info(path)
+        else:
+            with open(path + '/distractors_info.json',"w") as f:
+                f.write('original environment')

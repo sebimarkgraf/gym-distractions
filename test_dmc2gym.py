@@ -3,6 +3,7 @@ import cv2
 import os
 import imageio
 import numpy as np
+import random
 
 domain_name = 'cartpole'
 task_name = 'swingup'
@@ -17,6 +18,7 @@ action_repeat = 2
 intensity = 1
 save_video = False
 np.random.seed(seed)
+random.seed(seed)
 
 env = dmc2gym.make(domain_name=domain_name,
                        task_name=task_name,
@@ -47,6 +49,7 @@ def video_save(file_name):
 	imageio.mimsave(path, frames, fps=10)
 
 def main():
+	env.save_distractors_info(save_dir)
 	cv2.namedWindow("env", 0)
 	cv2.resizeWindow("env", 1000, 1000)
 	i = 0
