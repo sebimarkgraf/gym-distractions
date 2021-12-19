@@ -1,4 +1,4 @@
-import local_dmc2gym as dmc2gym
+import distractor_dmc2gym as dmc2gym
 import cv2
 import os
 import imageio
@@ -7,11 +7,11 @@ import random
 
 domain_name = 'cartpole'
 task_name = 'swingup'
-distract_type = 'dots'
+distract_type = 'video'
 difficulty = 'easy'
-ground = 'forground'
-# background_dataset_path = 'D:/python/DAVIS/JPEGImages/480p/'
-background_dataset_path = None
+ground = 'background'
+background_dataset_path = 'D:/python/DAVIS/JPEGImages/480p/'
+# background_dataset_path = None
 seed = 1
 image_size = 256
 action_repeat = 2

@@ -236,12 +236,13 @@ class RandomVideoSource(ImageSource):
 
     def build_bg_arr(self):
         self.image_path = self.image_paths[self._loc]
-        self.image_files = os.listdir(self.image_path)
+        self.image_files = sorted(os.listdir(self.image_path))
         self.bg_arr = []
         self.mask_arr = []
         for fname in self.image_files:
             fpath = os.path.join(self.image_path, fname)
             img = cv2.imread(fpath, cv2.IMREAD_COLOR)
+            img = img[:, :, ::-1]
             if self.ground == 'forground' or self.ground == 'both':
                 mpath = fpath.replace("JPEGImages", "Annotations").replace("jpg", "png")
                 mask = cv2.imread(mpath, cv2.IMREAD_GRAYSCALE)
