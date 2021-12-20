@@ -1,9 +1,13 @@
-# occluded_dmc
+# Distractor DMC2GYM
 
 ## Instructions
-to use local_dmc2gym just import local_dmc2gym, and use make() method.
+Installation:
+``` bash
+pip install -e git+ssh://git@github.com/ALRhub/occluded_dmc.git
 ```
-import local_dmc2gym as dmc2gym
+Use distractor_dmc2gym by importing it and using the make() method.
+```
+import distractor_dmc2gym as dmc2gym
 
 env = dmc2gym.make(domain_name,
                     task_name,

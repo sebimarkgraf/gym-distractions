@@ -1,8 +1,10 @@
+import os
+
 from gym import core, spaces
 from dm_control import suite
 from dm_env import specs
 import numpy as np
-from local_dmc2gym import background_source
+from .background_source import RandomDotsSource, RandomColorSource, RandomVideoSource, NoiseSource
 
 
 def _spec_to_box(spec):
@@ -104,13 +106,13 @@ class DMCWrapper(core.Env):
             difficulty = 'easy' if difficulty is None else difficulty
             shape2d = (height, width)
             if distract_type == 'color':
-                self._bg_source = background_source.RandomColorSource(shape2d, intensity)
+                self._bg_source = RandomColorSource(shape2d, intensity)
             elif distract_type == 'noise':
-                self._bg_source = background_source.NoiseSource(shape2d, intensity)
+                self._bg_source = NoiseSource(shape2d, intensity)
             elif distract_type == 'dots':
-                self._bg_source = background_source.RandomDotsSource(shape2d, difficulty, ground, intensity)
+                self._bg_source = RandomDotsSource(shape2d, difficulty, ground, intensity)
             elif distract_type == "videos" or background_dataset_path:
-                self._bg_source = background_source.RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
+                self._bg_source = RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
             else:
                 raise Exception("distract_type %s not defined." % distract_type)
 
@@ -155,7 +157,7 @@ class DMCWrapper(core.Env):
     def action_space(self):
         return self._norm_action_space
 
-    def seed(self, seed):
+    def seed(self, seed=None):
         self._true_action_space.seed(seed)
         self._norm_action_space.seed(seed)
         self._observation_space.seed(seed)
@@ -195,6 +197,7 @@ class DMCWrapper(core.Env):
         return obs
 
     def save_distractors_info(self, path):
+        os.makedirs(path, exist_ok=True)
         if self._bg_source:
             self._bg_source.save_info(path)
         else:
