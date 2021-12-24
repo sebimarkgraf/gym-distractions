@@ -7,6 +7,7 @@ import random
 
 DIFFICULTY_SCALE = dict(easy=0.1, medium=0.2, hard=0.3)
 DIFFICULTY_NUM_VIDEOS = dict(easy=4, medium=8, hard=None)
+DIFFICULTY_NUM_SETS = dict(easy=1, medium=2, hard=4)
 GRAVITATIONAL_CONSTANT = dict(Planet=1, Electrons=-1, IdealGas=0)
 
 TRAINING_VIDEOS = [
@@ -132,9 +133,9 @@ class NoiseSource(ImageSource):
 class RandomDotsSource(ImageSource):
     def __init__(self, shape, difficulty, ground=None, intensity=1):
         self.shape = shape
-        num_sets = DIFFICULTY_NUM_VIDEOS[difficulty]
+        num_sets = DIFFICULTY_NUM_SETS[difficulty]
         self.num_dots = 16
-        self.num_sets = num_sets if num_sets else 16
+        self.num_sets = num_sets
         self.num_frames = 1000  # after num_frames steps reset sizes, positions, colors, velocities of dots, -1 means no reset.
         self.ground = ground
         self.intensity = intensity
