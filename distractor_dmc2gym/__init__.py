@@ -38,7 +38,7 @@ def make(
             task_kwargs['time_limit'] = time_limit
         register(
             id=env_id,
-            entry_point='local_dmc2gym.wrappers:DMCWrapper',
+            entry_point='distractor_dmc2gym.wrappers:DMCWrapper',
             kwargs=dict(
                 domain_name=domain_name,
                 task_name=task_name,
