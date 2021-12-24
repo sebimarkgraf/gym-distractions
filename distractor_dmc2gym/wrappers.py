@@ -2,7 +2,7 @@ from gym import core, spaces
 from dm_control import suite
 from dm_env import specs
 import numpy as np
-from local_dmc2gym import background_source
+from distractor_dmc2gym import background_source
 
 
 def _spec_to_box(spec):
