@@ -8,12 +8,12 @@ import random
 domain_name = 'cartpole'
 task_name = 'swingup'
 distract_type = 'dots'
-difficulty = 'easy'
-ground = 'background'
+difficulty = 'hard'
+ground = 'foreground'
 #background_dataset_path = 'D:/python/DAVIS/JPEGImages/480p/'
 background_dataset_path = None
 seed = 1
-image_size = 256
+image_size = 84
 action_repeat = 2
 intensity = 1
 save_video = False

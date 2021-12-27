@@ -5,6 +5,7 @@ from dm_control import suite
 from dm_env import specs
 import numpy as np
 from .background_source import RandomDotsSource, RandomColorSource, RandomVideoSource, NoiseSource
+from .enums import ImageSourceEnum, DistractorLocations
 
 
 def _spec_to_box(spec):
@@ -107,16 +108,19 @@ class DMCWrapper(core.Env):
         if distract_type:
             difficulty = 'easy' if difficulty is None else difficulty
             shape2d = (height, width)
-            if distract_type == 'color':
+            if distract_type == ImageSourceEnum.COLOR:
                 self._bg_source = RandomColorSource(shape2d, intensity)
-            elif distract_type == 'noise':
+            elif distract_type == ImageSourceEnum.NOISE:
                 self._bg_source = NoiseSource(shape2d, intensity)
-            elif distract_type == 'dots':
+            elif distract_type == ImageSourceEnum.DOTS:
                 self._bg_source = RandomDotsSource(shape2d, difficulty, ground, intensity)
-            elif distract_type == "videos" or background_dataset_path:
+            elif distract_type == ImageSourceEnum.VIDEO:
                 self._bg_source = RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
             else:
-                raise Exception("distract_type %s not defined." % distract_type)
+                raise Exception(f"Distractor of type {distract_type} not known. Please choose a distractor type from "
+                                f"distractor type enum.")
+
+            assert ground in DistractorLocations, f"Distractor Location not valid: {ground}."
 
         # set seed
         self.seed(seed=task_kwargs.get('random', 1))
@@ -189,7 +193,7 @@ class DMCWrapper(core.Env):
         return obs
 
     def render(self, mode='rgb_array', height=None, width=None, camera_id=0, action=None):
-        assert mode == 'rgb_array', 'only support rgb_array mode, given %s' % mode
+        assert mode == 'rgb_array', f'only support rgb_array mode, given {mode}'
         height = height or self._height
         width = width or self._width
         camera_id = camera_id or self._camera_id
@@ -203,5 +207,5 @@ class DMCWrapper(core.Env):
         if self._bg_source:
             self._bg_source.save_info(path)
         else:
-            with open(path + '/distractors_info.json',"w") as f:
+            with open(path + '/distractors_info.json', "w") as f:
                 f.write('original environment')
