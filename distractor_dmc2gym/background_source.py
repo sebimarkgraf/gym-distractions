@@ -153,7 +153,7 @@ class RandomDotsSource(ImageSource):
         info['ground'] = self.ground
         info['gravity'] = self.gravity_type
         info['num_dots'] = self.num_dots
-        info['num_sets'] = self.num_dots
+        info['num_sets'] = self.num_sets
         info['set_frames'] = self.num_frames
         info['size'] = self.dots_size
         info['velocity'] = self.v
