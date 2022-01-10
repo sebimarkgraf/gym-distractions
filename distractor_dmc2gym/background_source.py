@@ -49,7 +49,7 @@ def get_img_paths(difficulty, data_path, train_or_val=None):
     num_frames = DIFFICULTY_NUM_VIDEOS[difficulty]
     if train_or_val is None:
         dataset_images = sorted(os.listdir(data_path))
-    elif train_or_val in ['trian', 'training']:
+    elif train_or_val in ['train', 'training']:
         dataset_images = TRAINING_VIDEOS
     elif train_or_val in ['val', 'validation']:
         dataset_images = VALIDATION_VIDEOS

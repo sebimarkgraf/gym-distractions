@@ -1,12 +1,16 @@
+from typing import Optional
+
 import gym
 from gym.envs.registration import register
+
+from .enums import ImageSourceEnum, DistractorLocations
 
 
 def make(
         domain_name,
         task_name,
-        distract_type=None,             # 'color', 'noise', 'dots', 'videos'
-        ground=None,                    # distracting is forground or backgroud or None
+        distract_type: Optional[ImageSourceEnum] = None,
+        ground: Optional[DistractorLocations] = None,
         difficulty=None,                # when use 'dots' distract tpye, set num_dots to 'hard': 16, 'medium': 8, 'easy': 5; when use 'videos' distract type, set num_video to hard:'all', others the same as 'dots'
         intensity=1,                    # distracting intensity(non-transparency?): 1 is all distrated, 0 is same as original env
         background_dataset_path=None,   # where you put your video/image dataset
