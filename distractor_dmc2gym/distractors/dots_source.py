@@ -38,7 +38,7 @@ class RandomDotsSource(ImageSource):
         self.x_lim_high = 0.95
         self.y_lim_low = 0.05
         self.y_lim_high = 0.95
-        self.dots_size = 0.08
+        self.dots_size = 5
         self.gravity_type = 'IdealGas'
         self.reset()
 
@@ -64,7 +64,7 @@ class RandomDotsSource(ImageSource):
             self.dots_init['positions'] = np.concatenate(
                 [np.random.uniform(self.x_lim_low, self.x_lim_high, size=(self.num_sets, self.num_dots, 1)),
                  np.random.uniform(self.y_lim_low, self.y_lim_high, size=(self.num_sets, self.num_dots, 1))], axis=2)
-            self.dots_init['sizes'] = np.random.uniform(1.5, 2, size=(self.num_sets, self.num_dots, 1))
+            self.dots_init['sizes'] = np.random.uniform(0.8, 1.2, size=(self.num_sets, self.num_dots, 1))
             self.dots_init['velocities'] = np.random.normal(0, 0.01, size=(self.num_sets, self.num_dots, 2)) * self.v
         dots_init = copy.deepcopy(self.dots_init)
         self.colors, self.positions, self.sizes, self.velocities = dots_init['colors'][self.set_idx], \
