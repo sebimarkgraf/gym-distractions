@@ -11,10 +11,10 @@ class ImageSourceEnum(str, Enum, metaclass=EnumContainsMeta):
     NOISE = "noise"
     COLOR = "color"
     DOTS = "dots"
+    DAVIS = "davis"
 
 
 class DistractorLocations(str, Enum, metaclass=EnumContainsMeta):
     FOREGROUND = "foreground"
     BACKGROUND = "background"
     BOTH = "both"
-

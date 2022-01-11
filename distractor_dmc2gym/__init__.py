@@ -6,15 +6,21 @@ from gym.envs.registration import register
 from .enums import ImageSourceEnum, DistractorLocations
 
 
+register(
+    id="deepmind_control-v1",
+    entry_point="distractor_dmc2gym.wrappers:DMCWrapper",
+)
+
+
 def make(
         domain_name,
         task_name,
         distract_type: Optional[ImageSourceEnum] = None,
         ground: Optional[DistractorLocations] = None,
-        difficulty=None,                # when use 'dots' distract tpye, set num_dots to 'hard': 16, 'medium': 8, 'easy': 5; when use 'videos' distract type, set num_video to hard:'all', others the same as 'dots'
-        intensity=1,                    # distracting intensity(non-transparency?): 1 is all distrated, 0 is same as original env
-        background_dataset_path=None,   # where you put your video/image dataset
-        train_or_val=None,              # when use DAVIS Dataset, can divided it to train-set and validation-set
+        difficulty=None,
+        intensity=1,
+        background_dataset_path=None,
+        train_or_val=None,  # when use DAVIS Dataset, can divided it to train-set and validation-set
         seed=1,
         visualize_reward=True,
         from_pixels=False,
@@ -22,46 +28,37 @@ def make(
         width=84,
         camera_id=0,
         frame_skip=1,
-        episode_length=1000,
         environment_kwargs=None,
-        time_limit=None,
-        channels_first=True
+        time_limit=10,
+        channels_first=True,
+        *args,
+        **kwargs
 ):
-    env_id = 'dmc_%s_%s_%s-v1' % (domain_name, task_name, seed)
 
     if from_pixels:
-        assert not visualize_reward, 'cannot use visualize reward when learning from pixels'
+        assert (
+            not visualize_reward
+        ), "cannot use visualize reward when learning from pixels"
 
-    max_episode_steps = (episode_length + frame_skip - 1) // frame_skip
-
-    if not env_id in gym.envs.registry.env_specs:
-        task_kwargs = {}
-        if seed is not None:
-            task_kwargs['random'] = seed
-        if time_limit is not None:
-            task_kwargs['time_limit'] = time_limit
-        register(
-            id=env_id,
-            entry_point='distractor_dmc2gym.wrappers:DMCWrapper',
-            kwargs=dict(
-                domain_name=domain_name,
-                task_name=task_name,
-                distract_type=distract_type,
-                ground=ground,
-                difficulty=difficulty,
-                intensity=intensity,
-                background_dataset_path=background_dataset_path,
-                train_or_val=train_or_val,
-                task_kwargs=task_kwargs,
-                environment_kwargs=environment_kwargs,
-                visualize_reward=visualize_reward,
-                from_pixels=from_pixels,
-                height=height,
-                width=width,
-                camera_id=camera_id,
-                frame_skip=frame_skip,
-                channels_first=channels_first,
-            ),
-            max_episode_steps=max_episode_steps,
-        )
-    return gym.make(env_id)
+    return gym.make(
+        "deepmind_control-v1",
+        **{
+            "domain_name": domain_name,
+            "task_name": task_name,
+            "task_kwargs": {"random": seed, "time_limit": time_limit},
+            "environment_kwargs": environment_kwargs,
+            "visualize_reward": visualize_reward,
+            "from_pixels": from_pixels,
+            "height": height,
+            "width": width,
+            "camera_id": camera_id,
+            "frame_skip": frame_skip,
+            "channels_first": channels_first,
+            "train_or_val": train_or_val,
+            "ground": ground,
+            "distract_type": distract_type,
+            "difficulty": difficulty,
+            "intensity": intensity,
+            "background_dataset_path": background_dataset_path
+        }
+    )

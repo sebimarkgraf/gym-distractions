@@ -4,8 +4,8 @@ from gym import core, spaces
 from dm_control import suite
 from dm_env import specs
 import numpy as np
-from .background_source import RandomDotsSource, RandomColorSource, RandomVideoSource, NoiseSource
 from .enums import ImageSourceEnum, DistractorLocations
+from .distractors import RandomColorSource, NoiseSource, RandomDotsSource, RandomVideoSource, DAVISDataSource
 
 
 def _spec_to_box(spec):
@@ -116,6 +116,8 @@ class DMCWrapper(core.Env):
                 self._bg_source = RandomDotsSource(shape2d, difficulty, ground, intensity)
             elif distract_type == ImageSourceEnum.VIDEO:
                 self._bg_source = RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
+            elif distract_type == ImageSourceEnum.DAVIS:
+                self._bg_source = DAVISDataSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
             else:
                 raise Exception(f"Distractor of type {distract_type} not known. Please choose a distractor type from "
                                 f"distractor type enum.")
@@ -199,7 +201,7 @@ class DMCWrapper(core.Env):
         camera_id = camera_id or self._camera_id
         obs = self._env.physics.render(height=height, width=width, camera_id=camera_id)
         if self._bg_source:
-            obs = self._bg_source.get_image(obs, action) 
+            obs = self._bg_source.get_image(obs, action)
         return obs
 
     def save_distractors_info(self, path):
