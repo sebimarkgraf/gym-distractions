@@ -8,8 +8,8 @@ import numpy as np
 
 import distractor_dmc2gym as dmc2gym
 
-domain_name = 'cartpole'
-task_name = 'swingup'
+domain_name = 'finger'
+task_name = 'spin'
 distract_type = 'dots'
 difficulty = 'hard'
 ground = 'foreground'

@@ -45,7 +45,7 @@ def make(
         **{
             "domain_name": domain_name,
             "task_name": task_name,
-            "task_kwargs": {"random": seed, "time_limit": time_limit},
+            "task_kwargs": {"random": seed},
             "environment_kwargs": environment_kwargs,
             "visualize_reward": visualize_reward,
             "from_pixels": from_pixels,
