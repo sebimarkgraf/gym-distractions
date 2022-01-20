@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from gym import core, spaces
 from dm_control import suite
@@ -6,6 +7,7 @@ from dm_env import specs
 import numpy as np
 from .enums import ImageSourceEnum, DistractorLocations
 from .distractors import RandomColorSource, NoiseSource, RandomDotsSource, RandomVideoSource, DAVISDataSource
+from .merge_strategy import strategies
 
 
 def _spec_to_box(spec):
@@ -103,27 +105,31 @@ class DMCWrapper(core.Env):
         
         self.current_state = None
 
-        # background/forground
+        # background/foreground
         self._bg_source = None
-        if distract_type:
+        if distract_type is not None:
             difficulty = 'easy' if difficulty is None else difficulty
             shape2d = (height, width)
-            if distract_type == ImageSourceEnum.COLOR:
-                self._bg_source = RandomColorSource(shape2d, intensity)
-            elif distract_type == ImageSourceEnum.NOISE:
-                self._bg_source = NoiseSource(shape2d, intensity)
-            elif distract_type == ImageSourceEnum.DOTS:
-                self._bg_source = RandomDotsSource(shape2d, difficulty, ground, intensity)
-            elif distract_type == ImageSourceEnum.VIDEO:
-                self._bg_source = RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
-            elif distract_type == ImageSourceEnum.DAVIS:
-                self._bg_source = DAVISDataSource(shape2d, difficulty, background_dataset_path, train_or_val, ground, intensity)
+            if isinstance(distract_type, str):
+                if distract_type == ImageSourceEnum.COLOR:
+                    self._bg_source = RandomColorSource(shape2d)
+                elif distract_type == ImageSourceEnum.NOISE:
+                    self._bg_source = NoiseSource(shape2d)
+                elif distract_type == ImageSourceEnum.DOTS:
+                    self._bg_source = RandomDotsSource(shape2d, difficulty)
+                elif distract_type == ImageSourceEnum.VIDEO:
+                    self._bg_source = RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val)
+                elif distract_type == ImageSourceEnum.DAVIS:
+                    self._bg_source = DAVISDataSource(shape2d, difficulty, background_dataset_path, train_or_val)
+                else:
+                    raise Exception(f"Distractor of type {distract_type} not known. Please choose a distractor type from "
+                                    f"distractor type enum.")
+
             else:
-                raise Exception(f"Distractor of type {distract_type} not known. Please choose a distractor type from "
-                                f"distractor type enum.")
+                # Given class
+                self._bg_source = distract_type(shape2d)
 
-            assert ground in DistractorLocations, f"Distractor Location not valid: {ground}."
-
+        self.merger = strategies[ground](self._bg_source)
         # set seed
         self.seed(seed=task_kwargs.get('random', 1))
 
@@ -186,6 +192,9 @@ class DMCWrapper(core.Env):
         obs = self._get_obs(time_step, action)
         self.current_state = _flatten_obs(time_step.observation)
         extra['discount'] = time_step.discount
+        if self.merger is not None:
+            extra['mask'] = self.merger.get_last_mask()
+
         return obs, reward, done, extra
 
     def reset(self):
@@ -201,13 +210,13 @@ class DMCWrapper(core.Env):
         camera_id = camera_id or self._camera_id
         obs = self._env.physics.render(height=height, width=width, camera_id=camera_id)
         if self._bg_source:
-            obs = self._bg_source.get_image(obs, action)
+            obs = self.merger.merge(obs)
         return obs
 
-    def save_distractors_info(self, path):
-        os.makedirs(path, exist_ok=True)
+    def save_distractors_info(self, path: Path):
+        path.mkdir(parents=True, exist_ok=True)
         if self._bg_source:
             self._bg_source.save_info(path)
         else:
-            with open(path + '/distractors_info.json', "w") as f:
+            with open(path / 'distractors_info.json', "w") as f:
                 f.write('original environment')

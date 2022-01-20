@@ -10,9 +10,9 @@ import distractor_dmc2gym as dmc2gym
 
 domain_name = 'finger'
 task_name = 'spin'
-distract_type = 'dots'
+distract_type = 'davis'
 difficulty = 'hard'
-ground = 'foreground'
+ground = 'background'
 background_dataset_path = Path('./davis')
 seed = 1
 image_size = 84
@@ -24,8 +24,8 @@ random.seed(seed)
 
 env = dmc2gym.make(domain_name=domain_name,
                    task_name=task_name,
-                   distract_type=distract_type,
-                   ground=ground,
+                   distraction_source=distract_type,
+                   distraction_location=ground,
                    difficulty=difficulty,
                    intensity=intensity,
                    background_dataset_path=background_dataset_path,
@@ -54,7 +54,7 @@ def video_save(file_name):
 
 
 def main():
-    env.save_distractors_info(save_dir)
+    env.save_distractors_info(Path(save_dir))
     cv2.namedWindow("env", 0)
     cv2.resizeWindow("env", 1000, 1000)
     i = 0

@@ -10,7 +10,6 @@ import requests
 from pathlib import Path
 from zipfile import ZipFile
 
-from distractor_dmc2gym import DistractorLocations
 from .background_source import ImageSource
 
 
@@ -97,52 +96,29 @@ class RandomVideoSource(ImageSource):
         for fpath in self.image_path.glob('*.jpg'):
             img = cv2.imread(str(fpath), cv2.IMREAD_COLOR)
             img = img[:, :, ::-1]
-            if self.ground == DistractorLocations.FOREGROUND or self.ground == DistractorLocations.BOTH:
-                fpath = str(fpath)
-                mpath = fpath.replace("JPEGImages", "Annotations_unsupervised").replace("jpg", "png")
-                mask = cv2.imread(str(mpath), cv2.IMREAD_GRAYSCALE)
-                mask = np.logical_and(mask, True)
-                img0 = np.zeros_like(img)
-                img0[mask] = img[mask]
-                self.mask_arr.append(img0)
-            if not self.ground == DistractorLocations.FOREGROUND:
-                self.bg_arr.append(img)
+            img = cv2.resize(img, (self.shape[1], self.shape[0]))
+            fpath = str(fpath)
+            mpath = fpath.replace("JPEGImages", "Annotations_unsupervised").replace("jpg", "png")
+            mask = cv2.imread(str(mpath), cv2.IMREAD_GRAYSCALE)
+            mask = cv2.resize(mask, (self.shape[1], self.shape[0]))
+            mask = np.logical_and(mask, True)
+            self.mask_arr.append(mask)
+            self.bg_arr.append(img)
 
-        self.num_images = max(len(self.bg_arr), len(self.mask_arr))
+        self.num_images = len(self.bg_arr)
 
     def reset(self):
         self.idx = 0
         self._loc = np.random.randint(0, self.num_path)
         self.build_bg_arr()
 
-    def get_image(self, obs, action=None):
+    def get_image(self):
         if self.idx == self.num_images:
             self.reset()
-        if self.ground == DistractorLocations.FOREGROUND:
-            self.bg = self.mask_arr[self.idx]
-        else:
-            self.bg = self.bg_arr[self.idx]
 
-        self.bg = cv2.resize(self.bg, (obs.shape[1], obs.shape[0]))
-
-        if self.ground == DistractorLocations.FOREGROUND:
-            mask = np.logical_and(self.bg, True)
-            # obs[mask] = self.bg[mask]
-
-        elif self.ground == DistractorLocations.BACKGROUND:
-            mask = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
-            # obs[mask] = self.bg[mask]
-
-        elif self.ground == DistractorLocations.BOTH:
-            mask1 = cv2.resize(self.mask_arr[self.idx], (obs.shape[1], obs.shape[0]))
-            mask1 = np.logical_or(mask1[:, :, 0], mask1[:, :, 1], mask1[:, :, 2])
-            mask2 = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
-            mask = np.logical_or(mask1, mask2)
-            # obs[mask] = self.bg[mask]
-        obs[mask] = self.intensity * self.bg[mask] + (1 - self.intensity) * obs[mask]
-        if action is not None:
-            self.idx += 1
-        return obs
+        img, mask = self.bg_arr[self.idx], self.mask_arr[self.idx]
+        self.idx += 1
+        return img, mask
 
 
 class DAVISDataSource(RandomVideoSource):
