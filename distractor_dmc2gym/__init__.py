@@ -25,8 +25,8 @@ def make(
         background_dataset_path: Optional[Path] = None,
         train_or_val: Optional[str] = None,  # when use DAVIS Dataset, can divided it to train-set and validation-set
         seed=1,
-        visualize_reward=True,
-        from_pixels=False,
+        visualize_reward=False,
+        from_pixels=True,
         height=84,
         width=84,
         camera_id=0,
