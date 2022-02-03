@@ -192,7 +192,7 @@ class DMCWrapper(core.Env):
         obs = self._get_obs(time_step, action)
         self.current_state = _flatten_obs(time_step.observation)
         extra['discount'] = time_step.discount
-        if self.merger is not None:
+        if self._bg_source is not None and self.merger is not None:
             extra['mask'] = self.merger.get_last_mask()
 
         return obs, reward, done, extra
