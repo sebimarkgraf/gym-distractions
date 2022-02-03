@@ -19,9 +19,6 @@ class BaseStrategy(metaclass=ABCMeta):
         pass
 
 
-
-
-
 class FrontMerge(BaseStrategy):
     _mask: np.array = None
 
@@ -40,7 +37,9 @@ class BackgroundMerge(BaseStrategy):
 
     def merge(self, obs: np.array) -> np.array:
         img, mask = self.source.get_image()
-        dmc_background_mask = np.logical_and((obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0]))
+        dmc_background_mask = np.logical_and(
+            (obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0])
+        )
         combined_mask = np.logical_and(mask, dmc_background_mask)
         obs[combined_mask] = img[combined_mask]
         self._mask = combined_mask
@@ -50,7 +49,4 @@ class BackgroundMerge(BaseStrategy):
         return self._mask
 
 
-strategies = {
-    'foreground': FrontMerge,
-    'background': BackgroundMerge
-}
+strategies = {"foreground": FrontMerge, "background": BackgroundMerge}

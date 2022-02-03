@@ -11,7 +11,7 @@ class NoiseSource(ImageSource):
 
     def get_info(self):
         info = super().get_info()
-        info['strength'] = self.strength
+        info["strength"] = self.strength
         return info
 
     def get_image(self):

@@ -1,5 +1,6 @@
 from enum import Enum, EnumMeta
 
+
 class EnumContainsMeta(EnumMeta):
     def __contains__(self, item):
         return item in self.__members__.values()

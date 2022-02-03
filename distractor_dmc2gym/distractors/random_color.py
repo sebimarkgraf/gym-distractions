@@ -1,6 +1,8 @@
-from distractor_dmc2gym.distractors import ImageSource
-import numpy as np
 import cv2
+import numpy as np
+
+from distractor_dmc2gym.distractors import ImageSource
+
 
 class RandomColorSource(ImageSource):
     def __init__(self, shape, intensity=1):
@@ -16,7 +18,7 @@ class RandomColorSource(ImageSource):
 
     def get_info(self):
         info = super().get_info()
-        info['color'] = self._color
+        info["color"] = self._color
         return info
 
     def get_image(self):

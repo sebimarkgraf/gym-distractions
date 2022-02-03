@@ -8,12 +8,12 @@ import numpy as np
 
 import distractor_dmc2gym as dmc2gym
 
-domain_name = 'finger'
-task_name = 'spin'
-distract_type = 'davis'
-difficulty = 'hard'
-ground = 'background'
-background_dataset_path = Path('./davis')
+domain_name = "finger"
+task_name = "spin"
+distract_type = "davis"
+difficulty = "hard"
+ground = "background"
+background_dataset_path = Path("./davis")
 seed = 1
 image_size = 84
 action_repeat = 2
@@ -22,27 +22,28 @@ save_video = False
 np.random.seed(seed)
 random.seed(seed)
 
-env = dmc2gym.make(domain_name=domain_name,
-                   task_name=task_name,
-                   distraction_source=distract_type,
-                   distraction_location=ground,
-                   difficulty=difficulty,
-                   intensity=intensity,
-                   background_dataset_path=background_dataset_path,
-                   seed=seed,
-                   visualize_reward=False,
-                   from_pixels=True,
-                   height=image_size,
-                   width=image_size,
-                   frame_skip=action_repeat,
-                   )
+env = dmc2gym.make(
+    domain_name=domain_name,
+    task_name=task_name,
+    distraction_source=distract_type,
+    distraction_location=ground,
+    difficulty=difficulty,
+    intensity=intensity,
+    background_dataset_path=background_dataset_path,
+    seed=seed,
+    visualize_reward=False,
+    from_pixels=True,
+    height=image_size,
+    width=image_size,
+    frame_skip=action_repeat,
+)
 
-save_dir = './test_env/'
+save_dir = "./test_env/"
 frames = []
 
 
 def video_record(env):
-    frame = env.render(mode='rgb_array', height=image_size, width=image_size)
+    frame = env.render(mode="rgb_array", height=image_size, width=image_size)
     frames.append(frame)
 
 
@@ -62,21 +63,21 @@ def main():
         env.reset()
         done = False
         while not done:
-            img = env.render(mode='rgb_array')
+            img = env.render(mode="rgb_array")
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
             video_record(env)
-            cv2.imshow('env', img)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            cv2.imshow("env", img)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
                 return
             i += 1
             if save_video:
                 if i == 200:
-                    video_save('RandomDots_for.mp4')
+                    video_save("RandomDots_for.mp4")
                     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-    print('done')
+    print("done")

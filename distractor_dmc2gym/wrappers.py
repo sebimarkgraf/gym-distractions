@@ -1,12 +1,19 @@
 import os
 from pathlib import Path
 
-from gym import core, spaces
+import numpy as np
 from dm_control import suite
 from dm_env import specs
-import numpy as np
-from .enums import ImageSourceEnum, DistractorLocations
-from .distractors import RandomColorSource, NoiseSource, RandomDotsSource, RandomVideoSource, DAVISDataSource
+from gym import core, spaces
+
+from .distractors import (
+    DAVISDataSource,
+    NoiseSource,
+    RandomColorSource,
+    RandomDotsSource,
+    RandomVideoSource,
+)
+from .enums import DistractorLocations, ImageSourceEnum
 from .merge_strategy import strategies
 
 
@@ -61,9 +68,11 @@ class DMCWrapper(core.Env):
         camera_id=0,
         frame_skip=1,
         environment_kwargs=None,
-        channels_first=True
+        channels_first=True,
     ):
-        assert 'random' in task_kwargs, 'please specify a seed, for deterministic behaviour'
+        assert (
+            "random" in task_kwargs
+        ), "please specify a seed, for deterministic behaviour"
         self._from_pixels = from_pixels
         self._height = height
         self._width = width
@@ -82,10 +91,7 @@ class DMCWrapper(core.Env):
         # true and normalized action spaces
         self._true_action_space = _spec_to_box([self._env.action_spec()])
         self._norm_action_space = spaces.Box(
-            low=-1.0,
-            high=1.0,
-            shape=self._true_action_space.shape,
-            dtype=np.float32
+            low=-1.0, high=1.0, shape=self._true_action_space.shape, dtype=np.float32
         )
 
         # create observation space
@@ -98,17 +104,15 @@ class DMCWrapper(core.Env):
             self._observation_space = _spec_to_box(
                 self._env.observation_spec().values()
             )
-            
-        self._state_space = _spec_to_box(
-                self._env.observation_spec().values()
-        )
-        
+
+        self._state_space = _spec_to_box(self._env.observation_spec().values())
+
         self.current_state = None
 
         # background/foreground
         self._bg_source = None
         if distract_type is not None:
-            difficulty = 'easy' if difficulty is None else difficulty
+            difficulty = "easy" if difficulty is None else difficulty
             shape2d = (height, width)
             if isinstance(distract_type, str):
                 if distract_type == ImageSourceEnum.COLOR:
@@ -118,12 +122,18 @@ class DMCWrapper(core.Env):
                 elif distract_type == ImageSourceEnum.DOTS:
                     self._bg_source = RandomDotsSource(shape2d, difficulty)
                 elif distract_type == ImageSourceEnum.VIDEO:
-                    self._bg_source = RandomVideoSource(shape2d, difficulty, background_dataset_path, train_or_val)
+                    self._bg_source = RandomVideoSource(
+                        shape2d, difficulty, background_dataset_path, train_or_val
+                    )
                 elif distract_type == ImageSourceEnum.DAVIS:
-                    self._bg_source = DAVISDataSource(shape2d, difficulty, background_dataset_path, train_or_val)
+                    self._bg_source = DAVISDataSource(
+                        shape2d, difficulty, background_dataset_path, train_or_val
+                    )
                 else:
-                    raise Exception(f"Distractor of type {distract_type} not known. Please choose a distractor type from "
-                                    f"distractor type enum.")
+                    raise Exception(
+                        f"Distractor of type {distract_type} not known. Please choose a distractor type from "
+                        f"distractor type enum."
+                    )
 
             else:
                 # Given class
@@ -131,7 +141,7 @@ class DMCWrapper(core.Env):
 
         self.merger = strategies[ground](self._bg_source)
         # set seed
-        self.seed(seed=task_kwargs.get('random', 1))
+        self.seed(seed=task_kwargs.get("random", 1))
 
     def __getattr__(self, name):
         return getattr(self._env, name)
@@ -142,7 +152,7 @@ class DMCWrapper(core.Env):
                 height=self._height,
                 width=self._width,
                 camera_id=self._camera_id,
-                action=action
+                action=action,
             )
             if self._channels_first:
                 obs = obs.transpose(2, 0, 1).copy()
@@ -181,7 +191,7 @@ class DMCWrapper(core.Env):
         action = self._convert_action(action)
         assert self._true_action_space.contains(action)
         reward = 0
-        extra = {'internal_state': self._env.physics.get_state().copy()}
+        extra = {"internal_state": self._env.physics.get_state().copy()}
 
         for _ in range(self._frame_skip):
             time_step = self._env.step(action)
@@ -191,9 +201,9 @@ class DMCWrapper(core.Env):
                 break
         obs = self._get_obs(time_step, action)
         self.current_state = _flatten_obs(time_step.observation)
-        extra['discount'] = time_step.discount
+        extra["discount"] = time_step.discount
         if self._bg_source is not None and self.merger is not None:
-            extra['mask'] = self.merger.get_last_mask()
+            extra["mask"] = self.merger.get_last_mask()
 
         return obs, reward, done, extra
 
@@ -203,8 +213,10 @@ class DMCWrapper(core.Env):
         obs = self._get_obs(time_step)
         return obs
 
-    def render(self, mode='rgb_array', height=None, width=None, camera_id=0, action=None):
-        assert mode == 'rgb_array', f'only support rgb_array mode, given {mode}'
+    def render(
+        self, mode="rgb_array", height=None, width=None, camera_id=0, action=None
+    ):
+        assert mode == "rgb_array", f"only support rgb_array mode, given {mode}"
         height = height or self._height
         width = width or self._width
         camera_id = camera_id or self._camera_id
@@ -218,5 +230,5 @@ class DMCWrapper(core.Env):
         if self._bg_source:
             self._bg_source.save_info(path)
         else:
-            with open(path / 'distractors_info.json', "w") as f:
-                f.write('original environment')
+            with open(path / "distractors_info.json", "w") as f:
+                f.write("original environment")
