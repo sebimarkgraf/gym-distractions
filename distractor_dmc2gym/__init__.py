@@ -16,7 +16,7 @@ register(
 def make(
     domain_name,
     task_name,
-    distraction_source: Union[str, Type[ImageSource]],
+    distraction_source: Optional[Union[str, Type[ImageSource]]] = None,
     distraction_location: Optional[Union[str, Type[BaseStrategy]]] = None,
     difficulty: Optional[str] = None,
     intensity: float = 1,
@@ -33,8 +33,6 @@ def make(
     frame_skip=1,
     environment_kwargs=None,
     channels_first=True,
-    *args,
-    **kwargs
 ):
 
     if from_pixels:

@@ -61,7 +61,7 @@ class DMCWrapper(core.Env):
         background_dataset_path=None,
         train_or_val=None,
         task_kwargs=None,
-        visualize_reward={},
+        visualize_reward: bool = False,
         from_pixels=False,
         height=84,
         width=84,
@@ -139,7 +139,7 @@ class DMCWrapper(core.Env):
                 # Given class
                 self._bg_source = distract_type(shape2d)
 
-        self.merger = strategies[ground](self._bg_source)
+            self.merger = strategies[ground](self._bg_source)
         # set seed
         self.seed(seed=task_kwargs.get("random", 1))
 
