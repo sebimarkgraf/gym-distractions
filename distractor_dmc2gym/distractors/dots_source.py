@@ -26,7 +26,7 @@ def compute_a(i, positions, sizes, type):
 
 
 class RandomDotsSource(ImageSource):
-    def __init__(self, shape, difficulty, ground=None, dots_size=0.16):
+    def __init__(self, shape, difficulty, ground=None, dots_size=0.12):
         self.shape = shape
         num_sets = DIFFICULTY_NUM_SETS[difficulty]
         self.num_dots = 12

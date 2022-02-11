@@ -10,9 +10,9 @@ import distractor_dmc2gym as dmc2gym
 
 domain_name = "finger"
 task_name = "spin"
-distract_type = "davis"
+distract_type = "dots"
 difficulty = "hard"
-ground = "background"
+ground = "foreground"
 background_dataset_path = Path("./davis")
 seed = 1
 image_size = 84
