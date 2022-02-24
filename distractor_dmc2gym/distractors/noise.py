@@ -17,5 +17,5 @@ class NoiseSource(ImageSource):
     def get_image(self):
         w, h = self.shape
         img = np.random.rand(w, h, 3) * self.strength
-        img = img.astype(np.unit8)
-        return img, np.ones(w, h)
+        img = img.astype(np.uint8)
+        return img, np.ones((w, h))

@@ -10,12 +10,12 @@ import distractor_dmc2gym as dmc2gym
 
 domain_name = "finger"
 task_name = "spin"
-distract_type = "dots"
+distract_type = "noise"
 difficulty = "hard"
-ground = "foreground"
+ground = "background"
 background_dataset_path = Path("./davis")
 seed = 1
-image_size = 84
+image_size = 256
 action_repeat = 2
 intensity = 1
 save_video = False
@@ -69,13 +69,15 @@ def main():
             obs, reward, done, info = env.step(action)
             video_record(env)
             cv2.imshow("env", img)
+            cv2.imwrite(f"test_env/env_dots_{i}.png", img)
+
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 return
             i += 1
-            if save_video:
-                if i == 200:
+            if i == 200:
+                if save_video:
                     video_save("RandomDots_for.mp4")
-                    return
+                return
 
 
 if __name__ == "__main__":
