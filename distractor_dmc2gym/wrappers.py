@@ -13,6 +13,7 @@ from .distractors import (
     RandomDotsSource,
     RandomVideoSource,
 )
+from .distractors.video_data_source import Kinetics400DataSource
 from .enums import DistractorLocations, ImageSourceEnum
 from .merge_strategy import strategies
 
@@ -127,6 +128,10 @@ class DMCWrapper(core.Env):
                     )
                 elif distract_type == ImageSourceEnum.DAVIS:
                     self._bg_source = DAVISDataSource(
+                        shape2d, difficulty, background_dataset_path, train_or_val
+                    )
+                elif distract_type == ImageSourceEnum.KINETICS:
+                    self._bg_source = Kinetics400DataSource(
                         shape2d, difficulty, background_dataset_path, train_or_val
                     )
                 else:

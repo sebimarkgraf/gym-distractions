@@ -10,7 +10,7 @@ import distractor_dmc2gym as dmc2gym
 
 domain_name = "finger"
 task_name = "spin"
-distract_type = "noise"
+distract_type = "davis"
 difficulty = "hard"
 ground = "background"
 background_dataset_path = Path("./davis")
@@ -74,10 +74,6 @@ def main():
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 return
             i += 1
-            if i == 200:
-                if save_video:
-                    video_save("RandomDots_for.mp4")
-                return
 
 
 if __name__ == "__main__":

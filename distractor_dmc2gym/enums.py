@@ -13,6 +13,7 @@ class ImageSourceEnum(str, Enum, metaclass=EnumContainsMeta):
     COLOR = "color"
     DOTS = "dots"
     DAVIS = "davis"
+    KINETICS = "kinetics400"
 
 
 class DistractorLocations(str, Enum, metaclass=EnumContainsMeta):
