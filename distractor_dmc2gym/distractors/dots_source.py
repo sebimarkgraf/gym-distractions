@@ -40,6 +40,7 @@ class RandomDotsSource(ImageSource):
         self.y_lim_high = 0.95
         self.dots_size = dots_size
         self.gravity_type = "IdealGas"
+        self._init()
         self.reset()
 
     def get_info(self):
@@ -58,35 +59,36 @@ class RandomDotsSource(ImageSource):
         # info['dots'] = {a: self.dots_init[a].tolist() for a in self.dots_init}
         return info
 
-    def reset(self, new=True):
+    def _init(self):
+        self.dots_init = {}
+        self.dots_init["colors"] = np.random.rand(self.num_sets, self.num_dots, 3)
+        self.dots_init["positions"] = np.concatenate(
+            [
+                np.random.uniform(
+                    self.x_lim_low,
+                    self.x_lim_high,
+                    size=(self.num_sets, self.num_dots, 1),
+                ),
+                np.random.uniform(
+                    self.y_lim_low,
+                    self.y_lim_high,
+                    size=(self.num_sets, self.num_dots, 1),
+                ),
+            ],
+            axis=2,
+        )
+        self.dots_init["sizes"] = np.random.uniform(
+            0.8, 1.2, size=(self.num_sets, self.num_dots, 1)
+        )
+        self.dots_init["velocities"] = (
+            np.random.normal(0, 0.01, size=(self.num_sets, self.num_dots, 2)) * self.v
+        )
+
+    def reset(self):
         self.idx = 0
         self.set_idx = np.random.randint(0, self.num_sets)
-        if new:
-            self.dots_init = {}
-            self.dots_init["colors"] = np.random.rand(self.num_sets, self.num_dots, 3)
-            self.dots_init["positions"] = np.concatenate(
-                [
-                    np.random.uniform(
-                        self.x_lim_low,
-                        self.x_lim_high,
-                        size=(self.num_sets, self.num_dots, 1),
-                    ),
-                    np.random.uniform(
-                        self.y_lim_low,
-                        self.y_lim_high,
-                        size=(self.num_sets, self.num_dots, 1),
-                    ),
-                ],
-                axis=2,
-            )
-            self.dots_init["sizes"] = np.random.uniform(
-                0.8, 1.2, size=(self.num_sets, self.num_dots, 1)
-            )
-            self.dots_init["velocities"] = (
-                np.random.normal(0, 0.01, size=(self.num_sets, self.num_dots, 2))
-                * self.v
-            )
-        dots_init = copy.deepcopy(self.dots_init)
+
+        dots_init = self.dots_init
         self.colors, self.positions, self.sizes, self.velocities = (
             dots_init["colors"][self.set_idx],
             dots_init["positions"][self.set_idx],
@@ -123,7 +125,7 @@ class RandomDotsSource(ImageSource):
 
     def get_image(self):
         if self.idx == self.num_frames:
-            self.reset(new=False)
+            self.reset()
 
         h, w = self.shape
         img = self.build_bg(w, h)
