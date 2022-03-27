@@ -216,6 +216,8 @@ class DMCWrapper(core.Env):
         time_step = self._env.reset()
         self.current_state = _flatten_obs(time_step.observation)
         obs = self._get_obs(time_step)
+        if self._bg_source:
+            self._bg_source.reset()
         return obs
 
     def render(

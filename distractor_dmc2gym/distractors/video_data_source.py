@@ -196,7 +196,7 @@ class DAVISDataSource(RandomVideoSource):
         self.shape = shape
         self.intensity = intensity
 
-        if check_empty(data_path):
+        if check_empty(data_path / "DAVIS"):
             self.download_dataset(data_path)
 
         path = data_path / "DAVIS" / "JPEGImages" / "480p"
@@ -255,7 +255,7 @@ class Kinetics400DataSource(RandomVideoSource):
         self.intensity = intensity
         self.grayscale = False
 
-        if check_empty(data_path):
+        if check_empty(data_path / "kinetics400"):
             self.download_dataset(data_path)
 
         path = data_path / "kinetics400"

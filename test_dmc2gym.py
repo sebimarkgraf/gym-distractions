@@ -10,13 +10,13 @@ import distractor_dmc2gym as dmc2gym
 
 domain_name = "finger"
 task_name = "spin"
-distract_type = "davis"
+distract_type = "dots"
 difficulty = "hard"
 ground = "background"
 background_dataset_path = Path("./davis")
 seed = 1
 image_size = 256
-action_repeat = 2
+action_repeat = 10
 intensity = 1
 save_video = False
 np.random.seed(seed)
@@ -62,7 +62,7 @@ def main():
     while True:
         env.reset()
         done = False
-        while not done:
+        for step in range(200):
             img = env.render(mode="rgb_array")
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             action = env.action_space.sample()
