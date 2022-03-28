@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -13,6 +15,18 @@ class BaseStrategy(metaclass=ABCMeta):
     @abstractmethod
     def merge(self, obs: np.array) -> np.array:
         pass
+
+    def merge_timeseries(self, obs: np.array) -> np.array:
+        """
+        Used for offline adding of observations
+        :param obs:
+        :return:
+        """
+        self.source.reset()
+        augmented_obs = []
+        for timestep in obs:
+            augmented_obs.append(self.merge(timestep))
+        return np.array(augmented_obs)
 
     @abstractmethod
     def get_last_mask(self):

@@ -26,13 +26,12 @@ def compute_a(i, positions, sizes, type):
 
 
 class RandomDotsSource(ImageSource):
-    def __init__(self, shape, difficulty, ground=None, dots_size=0.12):
+    def __init__(self, shape, difficulty, dots_size=0.12):
         self.shape = shape
         num_sets = DIFFICULTY_NUM_SETS[difficulty]
         self.num_dots = 12
         self.num_sets = num_sets
         self.num_frames = 1000  # after num_frames steps reset sizes, positions, colors, velocities of dots, -1 means no reset.
-        self.ground = ground
         self.v = 0.5
         self.x_lim_low = 0.05
         self.x_lim_high = 0.95
