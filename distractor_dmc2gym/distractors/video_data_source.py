@@ -148,10 +148,7 @@ def get_img_paths(difficulty, data_path: Path, train_or_val=None):
 
 
 class RandomVideoSource(ImageSource):
-    def __init__(
-        self, shape, difficulty, data_path, train_or_val=None, ground=None, intensity=1
-    ):
-        self.ground = ground
+    def __init__(self, shape, difficulty, data_path, train_or_val=None, intensity=1):
         self.shape = shape
         self.intensity = intensity
         self.image_paths = get_img_paths(difficulty, data_path, train_or_val)
@@ -161,7 +158,6 @@ class RandomVideoSource(ImageSource):
 
     def get_info(self):
         info = super().get_info()
-        info["ground"] = self.ground
         info["data_set"] = self.image_paths
         return info
 
@@ -184,15 +180,8 @@ class RandomVideoSource(ImageSource):
 
 class DAVISDataSource(RandomVideoSource):
     def __init__(
-        self,
-        shape,
-        difficulty,
-        data_path: Path,
-        train_or_val=None,
-        ground=None,
-        intensity=1,
+        self, shape, difficulty, data_path: Path, train_or_val=None, intensity=1,
     ):
-        self.ground = ground
         self.shape = shape
         self.intensity = intensity
 
@@ -207,7 +196,6 @@ class DAVISDataSource(RandomVideoSource):
 
     def get_info(self):
         info = {}
-        info["ground"] = self.ground
         info["data_set"] = "DAVIS_2017"
         return info
 
@@ -242,15 +230,8 @@ class DAVISDataSource(RandomVideoSource):
 
 class Kinetics400DataSource(RandomVideoSource):
     def __init__(
-        self,
-        shape,
-        difficulty,
-        data_path: Path,
-        train_or_val=None,
-        ground=None,
-        intensity=1,
+        self, shape, difficulty, data_path: Path, train_or_val=None, intensity=1,
     ):
-        self.ground = ground
         self.shape = shape
         self.intensity = intensity
         self.grayscale = False
@@ -287,7 +268,6 @@ class Kinetics400DataSource(RandomVideoSource):
 
     def get_info(self):
         info = {}
-        info["ground"] = self.ground
         info["data_set"] = "KINETICS_400"
         return info
 
