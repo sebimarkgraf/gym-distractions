@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.3.0
+    rev: v4.2.0
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
@@ -8,14 +8,14 @@ repos:
 
 # black
 - repo: https://github.com/psf/black
-  rev: 19.10b0 # Replace by any tag/version: https://github.com/psf/black/tags
+  rev: 22.3.0 # Replace by any tag/version: https://github.com/psf/black/tags
   hooks:
     - id: black
       language_version: python3
 
   # isort
 - repo: https://github.com/pycqa/isort
-  rev: 5.6.4
+  rev: 5.10.1
   hooks:
     - id: isort
       args: ["--profile", "black", "--filter-files"]

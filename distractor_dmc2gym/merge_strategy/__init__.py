@@ -38,9 +38,10 @@ class FrontMerge(BaseStrategy):
 
     def merge(self, obs: np.array) -> np.array:
         img, mask = self.source.get_image()
-        obs[mask] = img[mask]
+        augmented_obs = np.copy(obs)
+        augmented_obs[mask] = img[mask]
         self._mask = mask
-        return obs
+        return augmented_obs
 
     def get_last_mask(self):
         return self._mask
@@ -55,9 +56,10 @@ class BackgroundMerge(BaseStrategy):
             (obs[:, :, 2] > obs[:, :, 1]), (obs[:, :, 2] > obs[:, :, 0])
         )
         combined_mask = np.logical_and(mask, dmc_background_mask)
-        obs[combined_mask] = img[combined_mask]
+        augmented_obs = np.copy(obs)
+        augmented_obs[combined_mask] = img[combined_mask]
         self._mask = combined_mask
-        return obs
+        return augmented_obs
 
     def get_last_mask(self):
         return self._mask
