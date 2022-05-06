@@ -17,8 +17,8 @@ def compute_a(i, positions, sizes, type):
     force_vectors = (
         relative_positions
         * GRAVITATIONAL_CONSTANT[type]
-        * (sizes ** 2)
-        / (distances ** 2)
+        * (sizes**2)
+        / (distances**2)
     )
     accelerations = 0.00001 * np.sum(force_vectors, axis=0)
 
@@ -44,7 +44,6 @@ class RandomDotsSource(ImageSource):
 
     def get_info(self):
         info = super().get_info()
-        info["ground"] = self.ground
         info["gravity"] = self.gravity_type
         info["num_dots"] = self.num_dots
         info["num_sets"] = self.num_sets
