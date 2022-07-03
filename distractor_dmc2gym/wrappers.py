@@ -191,12 +191,19 @@ class DMCWrapper(core.Env):
         self._norm_action_space.seed(seed)
         self._observation_space.seed(seed)
 
+    def _getinfo(self, time_step):
+        extra = {"internal_state": self._env.physics.get_state().copy()}
+        extra["discount"] = time_step.discount
+        if self._bg_source is not None and self.merger is not None:
+            extra["mask"] = ~self.merger.get_last_mask()
+
+        return extra
+
     def step(self, action):
         assert self._norm_action_space.contains(action)
         action = self._convert_action(action)
         assert self._true_action_space.contains(action)
         reward = 0
-        extra = {"internal_state": self._env.physics.get_state().copy()}
 
         for _ in range(self._frame_skip):
             time_step = self._env.step(action)
@@ -206,19 +213,19 @@ class DMCWrapper(core.Env):
                 break
         obs = self._get_obs(time_step, action)
         self.current_state = _flatten_obs(time_step.observation)
-        extra["discount"] = time_step.discount
-        if self._bg_source is not None and self.merger is not None:
-            extra["mask"] = ~self.merger.get_last_mask()
+        extra = self._getinfo(time_step)
 
         return obs, reward, done, extra
 
-    def reset(self):
+    def reset(self, seed=None, return_info=False, options=None):
         time_step = self._env.reset()
         self.current_state = _flatten_obs(time_step.observation)
         obs = self._get_obs(time_step)
         if self._bg_source:
             self._bg_source.reset()
-        return obs
+
+        info = self._getinfo(time_step)
+        return (obs, info) if return_info else obs
 
     def render(
         self, mode="rgb_array", height=None, width=None, camera_id=0, action=None
