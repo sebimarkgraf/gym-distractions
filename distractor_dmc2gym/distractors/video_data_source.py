@@ -180,7 +180,12 @@ class RandomVideoSource(ImageSource):
 
 class DAVISDataSource(RandomVideoSource):
     def __init__(
-        self, shape, difficulty, data_path: Path, train_or_val=None, intensity=1,
+        self,
+        shape,
+        difficulty,
+        data_path: Path,
+        train_or_val=None,
+        intensity=1,
     ):
         self.shape = shape
         self.intensity = intensity
@@ -200,7 +205,7 @@ class DAVISDataSource(RandomVideoSource):
         return info
 
     def download_dataset(self, path):
-        path.mkdir(exist_ok=True)
+        path.mkdir(parents=True, exist_ok=True)
         logging.info("Downloading DAVIS dataset.")
         r = requests.get(DAVIS_URL)
         zipfile = ZipFile(BytesIO(r.content))
@@ -230,7 +235,12 @@ class DAVISDataSource(RandomVideoSource):
 
 class Kinetics400DataSource(RandomVideoSource):
     def __init__(
-        self, shape, difficulty, data_path: Path, train_or_val=None, intensity=1,
+        self,
+        shape,
+        difficulty,
+        data_path: Path,
+        train_or_val=None,
+        intensity=1,
     ):
         self.shape = shape
         self.intensity = intensity
@@ -272,7 +282,7 @@ class Kinetics400DataSource(RandomVideoSource):
         return info
 
     def download_dataset(self, path):
-        path.mkdir(exist_ok=True)
+        path.mkdir(parents=True, exist_ok=True)
         logging.info("Downloading Kinetics400 dataset.")
         r = requests.get(KINETICS400_URL, stream=True)
         file = tarfile.open(fileobj=r.raw, mode="r|gz")
