@@ -318,7 +318,8 @@ class Kinetics400DataSource(RandomVideoSource):
                             itag = stream.itag
                             break
                     video.streams.get_by_itag(itag).download(dest_path)
-                except Exception:
+                except Exception as e:
+                    print(f"Exception encountered in Download: {e}")
                     continue
 
     def build_bg_arr(self):
