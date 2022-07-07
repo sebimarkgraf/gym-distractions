@@ -8,12 +8,12 @@ import numpy as np
 
 import distractor_dmc2gym as dmc2gym
 
-domain_name = "finger"
-task_name = "spin"
-distract_type = "dots"
+domain_name = "cheetah"
+task_name = "run"
+distract_type = "davis"
 difficulty = "hard"
-ground = "background"
-background_dataset_path = Path("./davis")
+ground = "foreandbackground"
+background_dataset_path = Path("./background-datasets-test")
 seed = 1
 image_size = 256
 action_repeat = 10
@@ -67,9 +67,12 @@ def main():
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
-            video_record(env)
             cv2.imshow("env", img)
-            cv2.imwrite(f"test_env/env_dots_{i}.png", img)
+            cv2.imwrite(f"test_env/env_{distract_type}_{ground}_{i}.png", img)
+            cv2.imwrite(
+                f"test_env/env_{distract_type}_{ground}_mask_{i}.png",
+                info["mask"].astype(float) * 255.0,
+            )
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 return
