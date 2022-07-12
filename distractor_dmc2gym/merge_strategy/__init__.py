@@ -58,7 +58,7 @@ class BackgroundMerge(BaseStrategy):
         combined_mask = np.logical_and(mask, dmc_background_mask)
         augmented_obs = np.copy(obs)
         augmented_obs[combined_mask] = img[combined_mask]
-        self._mask = combined_mask
+        self._mask = dmc_background_mask
         return augmented_obs
 
     def get_last_mask(self):
