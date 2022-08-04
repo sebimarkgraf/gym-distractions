@@ -216,7 +216,7 @@ class DAVISDataSource(RandomVideoSource):
         self.image_path = self.image_paths[self._loc]
         self.bg_arr = []
         self.mask_arr = []
-        for fpath in self.image_path.glob("*.jpg"):
+        for fpath in sorted(self.image_path.glob("*.jpg")):
             img = cv2.imread(str(fpath), cv2.IMREAD_COLOR)
             img = img[:, :, ::-1]
             img = cv2.resize(img, (self.shape[1], self.shape[0]))
