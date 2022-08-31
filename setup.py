@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="distractor_dmc2gym",
-    version="1.2.2",
+    version="1.2.3",
     author="Sebastian Markgraf",
     author_email="sebastian-markgraf@t-online.de",
     description="A gym like wrapper for dm_control with distractions.",
