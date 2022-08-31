@@ -349,4 +349,4 @@ class Kinetics400DataSource(RandomVideoSource):
         img_arr = self.read_in_file(fname, grayscale=self.grayscale)
         self.num_images = len(img_arr)
         self.bg_arr = img_arr
-        self.mask_arr = np.full(self.shape, True)
+        self.mask_arr = np.full(img_arr.shape[:-1], True)
