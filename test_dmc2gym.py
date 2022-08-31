@@ -1,18 +1,20 @@
 import os
 import random
+import time
 from pathlib import Path
 
 import cv2
 import imageio
 import numpy as np
+from tqdm import tqdm
 
 import distractor_dmc2gym as dmc2gym
 
 domain_name = "cheetah"
 task_name = "run"
-distract_type = "davis"
+distract_type = "kinetics400"
 difficulty = "hard"
-ground = "foreandbackground"
+ground = "background"
 background_dataset_path = Path("./background-datasets-test")
 seed = 1
 image_size = 256
@@ -59,24 +61,28 @@ def main():
     cv2.namedWindow("env", 0)
     cv2.resizeWindow("env", 1000, 1000)
     i = 0
-    while True:
+    start = time.time()
+    for _ in tqdm(range(50)):
         env.reset()
         done = False
-        for step in range(200):
+        while not done:
             img = env.render(mode="rgb_array")
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
             cv2.imshow("env", img)
-            cv2.imwrite(f"test_env/env_{distract_type}_{ground}_{i}.png", img)
-            cv2.imwrite(
-                f"test_env/env_{distract_type}_{ground}_mask_{i}.png",
-                info["mask"].astype(float) * 255.0,
-            )
+            # cv2.imwrite(f"test_env/env_{distract_type}_{ground}_{i}.png", img)
+            # cv2.imwrite(
+            #    f"test_env/env_{distract_type}_{ground}_mask_{i}.png",
+            #    info["mask"].astype(float) * 255.0,
+            # )
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 return
             i += 1
+
+    stop = time.time()
+    print(f"Took {stop - start}")
 
 
 if __name__ == "__main__":

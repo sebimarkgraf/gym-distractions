@@ -3,6 +3,7 @@ import logging
 import os
 import random
 import tarfile
+from functools import cache, lru_cache
 from io import BytesIO
 from pathlib import Path
 from zipfile import ZipFile
@@ -161,7 +162,7 @@ class RandomVideoSource(ImageSource):
         info["data_set"] = self.image_paths
         return info
 
-    def build_bg_array(self):
+    def build_bg_arr(self):
         pass
 
     def reset(self):
@@ -212,11 +213,11 @@ class DAVISDataSource(RandomVideoSource):
         zipfile.extractall(path)
         logging.info("Download finished.")
 
-    def build_bg_arr(self):
-        self.image_path = self.image_paths[self._loc]
-        self.bg_arr = []
-        self.mask_arr = []
-        for fpath in sorted(self.image_path.glob("*.jpg")):
+    @cache
+    def read_in_filepath(self, file_path):
+        bg_array = []
+        mask_array = []
+        for fpath in sorted(file_path.glob("*.jpg")):
             img = cv2.imread(str(fpath), cv2.IMREAD_COLOR)
             img = img[:, :, ::-1]
             img = cv2.resize(img, (self.shape[1], self.shape[0]))
@@ -227,9 +228,14 @@ class DAVISDataSource(RandomVideoSource):
             mask = cv2.imread(str(mpath), cv2.IMREAD_GRAYSCALE)
             mask = cv2.resize(mask, (self.shape[1], self.shape[0]))
             mask = np.logical_and(mask, True)
-            self.mask_arr.append(mask)
-            self.bg_arr.append(img)
+            mask_array.append(mask)
+            bg_array.append(img)
 
+        return bg_array, mask_array
+
+    def build_bg_arr(self):
+        self.image_path = self.image_paths[self._loc]
+        self.bg_arr, self.mask_arr = self.read_in_filepath(self.image_path)
         self.num_images = len(self.bg_arr)
 
 
@@ -322,12 +328,8 @@ class Kinetics400DataSource(RandomVideoSource):
                     print(f"Exception encountered in Download: {e}")
                     continue
 
-    def build_bg_arr(self):
-        fname = self.image_paths[self._loc]
-        self.bg_arr = []
-        self.mask_arr = []
-
-        if self.grayscale:
+    def read_in_file(self, fname, grayscale=False):
+        if grayscale:
             frames = skvideo.io.vread(str(fname), outputdict={"-pix_fmt": "gray"})
         else:
             frames = skvideo.io.vread(str(fname), num_frames=1000)
@@ -339,8 +341,12 @@ class Kinetics400DataSource(RandomVideoSource):
             img_arr[i] = cv2.resize(
                 frames[i], (self.shape[1], self.shape[0])
             )  # THIS IS NOT A BUG! cv2 uses (width, height)
+
+        return img_arr
+
+    def build_bg_arr(self):
+        fname = self.image_paths[self._loc]
+        img_arr = self.read_in_file(fname, grayscale=self.grayscale)
         self.num_images = len(img_arr)
         self.bg_arr = img_arr
-        self.mask_arr = np.logical_or(
-            (img_arr[:, :, :, 2] > 0), img_arr[:, :, :, 1] > 0, img_arr[:, :, :, 0] > 0
-        )
+        self.mask_arr = np.full(self.shape, True)

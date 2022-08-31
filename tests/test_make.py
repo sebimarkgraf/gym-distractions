@@ -6,7 +6,12 @@ from distractor_dmc2gym import make
 
 def test_make():
     make(
-        "cheetah", "run", None, "color", from_pixels=True, visualize_reward=False,
+        "cheetah",
+        "run",
+        None,
+        "color",
+        from_pixels=True,
+        visualize_reward=False,
     )
 
 
@@ -19,6 +24,7 @@ def test_image_size():
         visualize_reward=False,
         height=128,
         width=256,
+        channels_first=False,
     )
     assert env.observation_space.shape[0] == 128
     assert env.observation_space.shape[1] == 256
