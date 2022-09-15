@@ -9,7 +9,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "gym",
-        "dm_control",
+        "dm_control >= 1.0.0",
         "opencv-python",
         "numpy",
         "imageio",
