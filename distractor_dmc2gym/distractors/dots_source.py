@@ -27,6 +27,7 @@ def compute_a(i, positions, sizes, type):
 
 class RandomDotsSource(ImageSource):
     def __init__(self, shape, difficulty, dots_size=0.12):
+        super().__init__()
         self.shape = shape
         num_sets = DIFFICULTY_NUM_SETS[difficulty]
         self.num_dots = 12
@@ -59,15 +60,15 @@ class RandomDotsSource(ImageSource):
 
     def _init(self):
         self.dots_init = {
-            "colors": np.random.rand(self.num_sets, self.num_dots, 3),
+            "colors": self._np_random.random((self.num_sets, self.num_dots, 3)),
             "positions": np.concatenate(
                 [
-                    np.random.uniform(
+                    self._np_random.uniform(
                         self.x_lim_low,
                         self.x_lim_high,
                         size=(self.num_sets, self.num_dots, 1),
                     ),
-                    np.random.uniform(
+                    self._np_random.uniform(
                         self.y_lim_low,
                         self.y_lim_high,
                         size=(self.num_sets, self.num_dots, 1),
@@ -75,25 +76,28 @@ class RandomDotsSource(ImageSource):
                 ],
                 axis=2,
             ),
-            "sizes": np.random.uniform(
+            "sizes": self._np_random.uniform(
                 0.8, 1.2, size=(self.num_sets, self.num_dots, 1)
             ),
             "velocities": (
-                np.random.normal(0, 0.01, size=(self.num_sets, self.num_dots, 2))
+                self._np_random.normal(0, 0.01, size=(self.num_sets, self.num_dots, 2))
                 * self.v
             ),
         }
 
-    def reset(self):
+    def reset(self, seed=None):
+        super().reset(seed)
         self.idx = 0
-        self.set_idx = np.random.randint(0, self.num_sets)
+        self.set_idx = self._np_random.integers(0, self.num_sets)
 
         dots_init = self.dots_init
+        # We need to copy here
+        # Otherwise we potentially adjust the init positions by accident
         self.colors, self.positions, self.sizes, self.velocities = (
-            dots_init["colors"][self.set_idx],
-            dots_init["positions"][self.set_idx],
-            dots_init["sizes"][self.set_idx],
-            dots_init["velocities"][self.set_idx],
+            dots_init["colors"][self.set_idx].copy(),
+            dots_init["positions"][self.set_idx].copy(),
+            dots_init["sizes"][self.set_idx].copy(),
+            dots_init["velocities"][self.set_idx].copy(),
         )
 
     def limit_pos(self, i):
@@ -119,7 +123,6 @@ class RandomDotsSource(ImageSource):
             self.velocities[i] += a
             self.positions[i] += move
             self.limit_pos(i)
-            # self.colors[i] += np.random.normal(1 / 255, 0.005, 3)  # change color
         bg *= 255
         return bg.astype(np.uint8)
 

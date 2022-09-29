@@ -165,9 +165,10 @@ class RandomVideoSource(ImageSource):
     def build_bg_arr(self):
         pass
 
-    def reset(self):
+    def reset(self, seed=None):
+        super().reset(seed)
         self.idx = 0
-        self._loc = np.random.randint(0, self.num_path)
+        self._loc = self._np_random.randint(0, self.num_path)
         self.build_bg_arr()
 
     def get_image(self):
@@ -180,16 +181,8 @@ class RandomVideoSource(ImageSource):
 
 
 class DAVISDataSource(RandomVideoSource):
-    def __init__(
-        self,
-        shape,
-        difficulty,
-        data_path: Path,
-        train_or_val=None,
-        intensity=1,
-    ):
-        self.shape = shape
-        self.intensity = intensity
+    def __init__(self, difficulty, data_path: Path, train_or_val=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         if check_empty(data_path / "DAVIS"):
             self.download_dataset(data_path)
@@ -241,15 +234,9 @@ class DAVISDataSource(RandomVideoSource):
 
 class Kinetics400DataSource(RandomVideoSource):
     def __init__(
-        self,
-        shape,
-        difficulty,
-        data_path: Path,
-        train_or_val=None,
-        intensity=1,
+        self, shape, difficulty, data_path: Path, train_or_val=None, *args, **kwargs
     ):
-        self.shape = shape
-        self.intensity = intensity
+        super().__init__(*args, **kwargs)
         self.grayscale = False
 
         if check_empty(data_path / "kinetics400"):

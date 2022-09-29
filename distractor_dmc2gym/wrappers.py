@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-
 import numpy as np
 from dm_control import suite
 from dm_env import specs
@@ -14,7 +11,7 @@ from .distractors import (
     RandomVideoSource,
 )
 from .distractors.video_data_source import Kinetics400DataSource
-from .enums import DistractorLocations, ImageSourceEnum
+from .enums import ImageSourceEnum
 from .merge_strategy import strategies
 
 
@@ -58,7 +55,6 @@ class DMCWrapper(core.Env):
         distract_type=None,
         ground=None,
         difficulty=None,
-        intensity=1,
         background_dataset_path=None,
         train_or_val=None,
         task_kwargs=None,
@@ -71,9 +67,6 @@ class DMCWrapper(core.Env):
         environment_kwargs=None,
         channels_first=True,
     ):
-        assert (
-            "random" in task_kwargs
-        ), "please specify a seed, for deterministic behaviour"
         self._from_pixels = from_pixels
         self._height = height
         self._width = width
@@ -81,13 +74,14 @@ class DMCWrapper(core.Env):
         self._frame_skip = frame_skip
         self._channels_first = channels_first
 
-        self._env = suite.load(
+        self._env_args = dict(
             domain_name=domain_name,
             task_name=task_name,
             task_kwargs=task_kwargs,
             visualize_reward=visualize_reward,
             environment_kwargs=environment_kwargs,
         )
+        self._env = suite.load(**self._env_args)
 
         # true and normalized action spaces
         self._true_action_space = _spec_to_box([self._env.action_spec()])
@@ -145,8 +139,6 @@ class DMCWrapper(core.Env):
                 self._bg_source = distract_type(shape2d)
 
             self.merger = strategies[ground](self._bg_source)
-        # set seed
-        self.seed(seed=task_kwargs.get("random", 1))
 
     def __getattr__(self, name):
         return getattr(self._env, name)
@@ -215,17 +207,23 @@ class DMCWrapper(core.Env):
         self.current_state = _flatten_obs(time_step.observation)
         extra = self._getinfo(time_step)
 
-        return obs, reward, done, extra
+        return obs, reward, done, False, extra
 
-    def reset(self, seed=None, return_info=False, options=None):
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
+        if seed is not None:
+            self._env_args["task_kwargs"]["random"] = seed
+            self._env = suite.load(**self._env_args)
+            self.seed(seed)
+        if self._bg_source:
+            self._bg_source.reset(seed=seed)
         time_step = self._env.reset()
+
         self.current_state = _flatten_obs(time_step.observation)
         obs = self._get_obs(time_step)
-        if self._bg_source:
-            self._bg_source.reset()
 
         info = self._getinfo(time_step)
-        return (obs, info) if return_info else obs
+        return obs, info
 
     def render(
         self, mode="rgb_array", height=None, width=None, camera_id=0, action=None
@@ -238,11 +236,3 @@ class DMCWrapper(core.Env):
         if self._bg_source:
             obs = self.merger.merge(obs)
         return obs
-
-    def save_distractors_info(self, path: Path):
-        path.mkdir(parents=True, exist_ok=True)
-        if self._bg_source:
-            self._bg_source.save_info(path)
-        else:
-            with open(path / "distractors_info.json", "w") as f:
-                f.write("original environment")

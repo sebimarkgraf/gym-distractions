@@ -9,7 +9,8 @@ from .enums import DistractorLocations, ImageSourceEnum
 from .merge_strategy import BaseStrategy
 
 register(
-    id="deepmind_control-v1", entry_point="distractor_dmc2gym.wrappers:DMCWrapper",
+    id="deepmind_control-v1",
+    entry_point="distractor_dmc2gym.wrappers:DMCWrapper",
 )
 
 
@@ -19,7 +20,6 @@ def make(
     distraction_source: Optional[Union[str, Type[ImageSource]]] = None,
     distraction_location: Optional[Union[str, Type[BaseStrategy]]] = None,
     difficulty: Optional[str] = None,
-    intensity: float = 1,
     background_dataset_path: Optional[Path] = None,
     train_or_val: Optional[
         str
@@ -58,7 +58,6 @@ def make(
             "ground": distraction_location,
             "distract_type": distraction_source,
             "difficulty": difficulty,
-            "intensity": intensity,
             "background_dataset_path": background_dataset_path,
         }
     )

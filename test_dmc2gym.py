@@ -10,9 +10,9 @@ from tqdm import tqdm
 
 import distractor_dmc2gym as dmc2gym
 
-domain_name = "cheetah"
-task_name = "run"
-distract_type = "kinetics400"
+domain_name = "ball_in_cup"
+task_name = "catch"
+distract_type = "davis"
 difficulty = "hard"
 ground = "background"
 background_dataset_path = Path("./background-datasets-test")
@@ -57,12 +57,11 @@ def video_save(file_name):
 
 
 def main():
-    env.save_distractors_info(Path(save_dir))
     cv2.namedWindow("env", 0)
     cv2.resizeWindow("env", 1000, 1000)
     i = 0
     start = time.time()
-    for _ in tqdm(range(50)):
+    for _ in tqdm(range(1)):
         env.reset()
         done = False
         while not done:
@@ -71,7 +70,7 @@ def main():
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
             cv2.imshow("env", img)
-            # cv2.imwrite(f"test_env/env_{distract_type}_{ground}_{i}.png", img)
+            cv2.imwrite(f"test_env/env_{distract_type}_{ground}_{i}.png", img)
             # cv2.imwrite(
             #    f"test_env/env_{distract_type}_{ground}_mask_{i}.png",
             #    info["mask"].astype(float) * 255.0,
