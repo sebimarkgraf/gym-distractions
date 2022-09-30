@@ -24,7 +24,6 @@ def make(
     train_or_val: Optional[
         str
     ] = None,  # when use DAVIS Dataset, can divided it to train-set and validation-set
-    seed=1,
     visualize_reward=False,
     from_pixels=True,
     height=84,
@@ -45,7 +44,7 @@ def make(
         **{
             "domain_name": domain_name,
             "task_name": task_name,
-            "task_kwargs": {"random": seed},
+            "task_kwargs": {},
             "environment_kwargs": environment_kwargs,
             "visualize_reward": visualize_reward,
             "from_pixels": from_pixels,

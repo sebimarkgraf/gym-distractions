@@ -44,11 +44,11 @@ def test_action_repeat(action_repeat):
     )
     env = env
     done = False
-    obs = env.reset()
+    env.reset()
     steps = 0
     while not done:
         a = env.action_space.sample()
-        obs, reward, done, _ = env.step(a)
+        obs, reward, done, truncated, info = env.step(a)
         steps += 1
 
     assert steps == 1000 / action_repeat
@@ -69,9 +69,9 @@ def test_higher_action_repeat_distracted(action_repeat, distraction_location):
         frame_skip=action_repeat,
     )
     env = env
-    obs = env.reset()
+    env.reset()
 
     a = env.action_space.sample()
-    obs, reward, done, _ = env.step(a)
+    obs, reward, done, _, _ = env.step(a)
 
     assert obs is not None

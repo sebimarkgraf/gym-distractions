@@ -36,7 +36,11 @@ def resource_files(tmpdir_factory):
 
 
 def test_render_foreground():
-    wrapper = DMCWrapper(**default_args, distract_type="dots", ground="foreground",)
+    wrapper = DMCWrapper(
+        **default_args,
+        distract_type="dots",
+        ground="foreground",
+    )
     obs = wrapper.render()
     assert obs is not None
     # Mujoco is always RGB
@@ -56,9 +60,11 @@ def test_render_background():
 
 
 def test_step():
-    wrapper = DMCWrapper(**default_args,)
+    wrapper = DMCWrapper(
+        **default_args,
+    )
     a = wrapper.action_space.sample()
-    obs, reward, done, _ = wrapper.step(a)
+    obs, reward, done, truncated, _ = wrapper.step(a)
 
     assert obs is not None
     # Mujoco is always RGB
