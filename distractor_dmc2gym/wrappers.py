@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 from dm_control import suite
 from dm_env import specs
@@ -5,14 +7,67 @@ from gym import core, spaces
 
 from .distractors import (
     DAVISDataSource,
+    Kinetics400DataSource,
     NoiseSource,
     RandomColorSource,
-    RandomDotsSource,
     RandomVideoSource,
 )
-from .distractors.video_data_source import Kinetics400DataSource
+from .distractors.dots import (
+    ConstantDotsSource,
+    EpisodeDotsSource,
+    LinearDotsSource,
+    PendulumDotsSource,
+    QuadLinkDotsSource,
+    RandomDotsSource,
+)
 from .enums import ImageSourceEnum
 from .merge_strategy import strategies
+
+
+def map_distract_type_to_distractor(
+    distract_type, shape2d, difficulty, background_dataset_path, train_or_val
+):
+    if isinstance(distract_type, str):
+        if distract_type == ImageSourceEnum.DOTS:
+            warnings.warn(
+                "Dots were splitted in multiple classes. Please update your dots source to one"
+                "of the new types.",
+                DeprecationWarning,
+            )
+            distract_type = ImageSourceEnum.DOTS_LINEAR
+
+        default_types = {
+            ImageSourceEnum.COLOR: RandomColorSource,
+            ImageSourceEnum.NOISE: NoiseSource,
+            ImageSourceEnum.DOTS_LINEAR: LinearDotsSource,
+            ImageSourceEnum.DOTS_CONSTANT: ConstantDotsSource,
+            ImageSourceEnum.DOTS_EPISODE: EpisodeDotsSource,
+            ImageSourceEnum.DOTS_RANDOM: RandomDotsSource,
+            ImageSourceEnum.DOTS_PENDULUM: PendulumDotsSource,
+            ImageSourceEnum.DOTS_QUADLINK: QuadLinkDotsSource,
+        }
+
+        if distract_type in default_types:
+            return default_types[distract_type](shape2d, difficulty)
+
+        video_distractors = {
+            ImageSourceEnum.VIDEO: RandomVideoSource,
+            ImageSourceEnum.DAVIS: DAVISDataSource,
+            ImageSourceEnum.KINETICS: Kinetics400DataSource,
+        }
+        if distract_type in video_distractors:
+            return video_distractors[distract_type](
+                shape2d, difficulty, background_dataset_path, train_or_val
+            )
+
+        raise Exception(
+            f"Distractor of type {distract_type} not known. Please choose a distractor type from "
+            f"distractor type enum."
+        )
+
+    else:
+        # Given class
+        return distract_type(shape2d, difficulty)
 
 
 def _spec_to_box(spec):
@@ -109,35 +164,13 @@ class DMCWrapper(core.Env):
         if distract_type is not None:
             difficulty = "easy" if difficulty is None else difficulty
             shape2d = (height, width)
-            if isinstance(distract_type, str):
-                if distract_type == ImageSourceEnum.COLOR:
-                    self._bg_source = RandomColorSource(shape2d)
-                elif distract_type == ImageSourceEnum.NOISE:
-                    self._bg_source = NoiseSource(shape2d)
-                elif distract_type == ImageSourceEnum.DOTS:
-                    self._bg_source = RandomDotsSource(shape2d, difficulty)
-                elif distract_type == ImageSourceEnum.VIDEO:
-                    self._bg_source = RandomVideoSource(
-                        shape2d, difficulty, background_dataset_path, train_or_val
-                    )
-                elif distract_type == ImageSourceEnum.DAVIS:
-                    self._bg_source = DAVISDataSource(
-                        shape2d, difficulty, background_dataset_path, train_or_val
-                    )
-                elif distract_type == ImageSourceEnum.KINETICS:
-                    self._bg_source = Kinetics400DataSource(
-                        shape2d, difficulty, background_dataset_path, train_or_val
-                    )
-                else:
-                    raise Exception(
-                        f"Distractor of type {distract_type} not known. Please choose a distractor type from "
-                        f"distractor type enum."
-                    )
-
-            else:
-                # Given class
-                self._bg_source = distract_type(shape2d)
-
+            self._bg_source = map_distract_type_to_distractor(
+                distract_type,
+                shape2d,
+                difficulty,
+                background_dataset_path,
+                train_or_val,
+            )
             self.merger = strategies[ground](self._bg_source)
 
     def __getattr__(self, name):

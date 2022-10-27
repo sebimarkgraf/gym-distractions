@@ -12,6 +12,12 @@ class ImageSourceEnum(str, Enum, metaclass=EnumContainsMeta):
     NOISE = "noise"
     COLOR = "color"
     DOTS = "dots"
+    DOTS_CONSTANT = "dots_constant"
+    DOTS_EPISODE = "dots_episode"
+    DOTS_LINEAR = "dots_linear"
+    DOTS_PENDULUM = "dots_pendulum"
+    DOTS_QUADLINK = "dots_quadlink"
+    DOTS_RANDOM = "dots_random"
     DAVIS = "davis"
     KINETICS = "kinetics400"
 

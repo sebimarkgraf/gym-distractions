@@ -4,9 +4,8 @@ from distractor_dmc2gym.distractors import ImageSource
 
 
 class RandomColorSource(ImageSource):
-    def __init__(self, shape, intensity=1):
-        super().__init__()
-        self.shape = shape
+    def __init__(self, *args, intensity=1):
+        super().__init__(*args)
         self.intensity = intensity
         self.bg = np.zeros((self.shape[0], self.shape[1], 3))
         self.mask = np.ones((self.shape[0], self.shape[1]))

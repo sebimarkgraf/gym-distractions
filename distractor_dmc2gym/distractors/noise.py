@@ -4,10 +4,9 @@ from distractor_dmc2gym.distractors import ImageSource
 
 
 class NoiseSource(ImageSource):
-    def __init__(self, shape, strength=255, intensity=1):
-        super().__init__()
+    def __init__(self, *args, strength=255, intensity=1):
+        super().__init__(*args)
         self.strength = strength
-        self.shape = shape
         self.intensity = intensity
 
     def get_info(self):

@@ -10,8 +10,10 @@ DIFFICULTY_SCALE = dict(easy=0.1, medium=0.2, hard=0.3)
 
 
 class ImageSource(object, metaclass=ABCMeta):
-    def __init__(self):
+    def __init__(self, shape2d, difficulty):
         self._np_random, seed = np_random()
+        self.shape = shape2d
+        self.difficulty = difficulty
 
     @abstractmethod
     def get_image(self) -> Tuple[np.array, np.array]:

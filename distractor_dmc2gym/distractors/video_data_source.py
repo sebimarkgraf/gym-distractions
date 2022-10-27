@@ -149,10 +149,10 @@ def get_img_paths(difficulty, data_path: Path, train_or_val=None):
 
 
 class RandomVideoSource(ImageSource):
-    def __init__(self, shape, difficulty, data_path, train_or_val=None, intensity=1):
-        self.shape = shape
+    def __init__(self, *args, data_path, train_or_val=None, intensity=1):
+        super(RandomVideoSource, self).__init__(*args)
         self.intensity = intensity
-        self.image_paths = get_img_paths(difficulty, data_path, train_or_val)
+        self.image_paths = get_img_paths(self.difficulty, data_path, train_or_val)
         self.num_path = len(self.image_paths)
         self.num_images = 0
         self.reset()
@@ -233,9 +233,7 @@ class DAVISDataSource(RandomVideoSource):
 
 
 class Kinetics400DataSource(RandomVideoSource):
-    def __init__(
-        self, shape, difficulty, data_path: Path, train_or_val=None, *args, **kwargs
-    ):
+    def __init__(self, *args, data_path: Path, train_or_val=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.grayscale = False
 
@@ -243,7 +241,7 @@ class Kinetics400DataSource(RandomVideoSource):
             self.download_dataset(data_path)
 
         path = data_path / "kinetics400"
-        self.image_paths = self.get_img_paths(difficulty, path, train_or_val)
+        self.image_paths = self.get_img_paths(self.difficulty, path, train_or_val)
         self.num_path = len(self.image_paths)
 
         self.reset()

@@ -10,9 +10,9 @@ from tqdm import tqdm
 
 import distractor_dmc2gym as dmc2gym
 
-domain_name = "ball_in_cup"
-task_name = "catch"
-distract_type = "davis"
+domain_name = "cheetah"
+task_name = "run"
+distract_type = "dots_constant"
 difficulty = "hard"
 ground = "background"
 background_dataset_path = Path("./background-datasets-test")
@@ -59,16 +59,16 @@ def main():
     cv2.resizeWindow("env", 1000, 1000)
     i = 0
     start = time.time()
-    for _ in tqdm(range(1)):
+    for _ in tqdm(range(5)):
         env.reset()
         done = False
         while not done:
             img = env.render(mode="rgb_array")
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             action = env.action_space.sample()
-            obs, reward, done, info = env.step(action)
+            obs, reward, done, truncated, info = env.step(action)
             cv2.imshow("env", img)
-            cv2.imwrite(f"test_env/env_{distract_type}_{ground}_{i}.png", img)
+            # cv2.imwrite(f"test_env/env_{distract_type}_{ground}_{i}.png", img)
             # cv2.imwrite(
             #    f"test_env/env_{distract_type}_{ground}_mask_{i}.png",
             #    info["mask"].astype(float) * 255.0,
