@@ -7,7 +7,7 @@ from distractor_dmc2gym.merge_strategy import BackgroundMerge, FrontMerge
 
 @pytest.mark.parametrize("strategy", [FrontMerge, BackgroundMerge])
 def test_merge_timeseries(strategy):
-    distractor = RandomDotsSource(shape=(64, 64), difficulty="easy")
+    distractor = RandomDotsSource(shape2d=(64, 64), difficulty="easy")
     strategy = strategy(source=distractor)
 
     T = 50

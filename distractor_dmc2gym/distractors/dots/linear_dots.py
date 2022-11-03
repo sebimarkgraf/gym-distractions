@@ -27,8 +27,7 @@ class LinearDotsSource(GeneralDotsSource):
         return {
             **super(LinearDotsSource, self).init_dots(),
             "velocities": (
-                self._np_random.normal(0, 0.01, size=(self.num_sets, self.num_dots, 2))
-                * self.v
+                self._np_random.normal(0, 0.01, size=(self.num_dots, 2)) * self.v
             ),
         }
 
@@ -65,6 +64,5 @@ class LinearDotsSource(GeneralDotsSource):
             self.velocities[i][1] = -self.velocities[i][1]
 
     def reset_dots(self):
-        idx = super(LinearDotsSource, self).reset_dots()
-        self.velocities = self.dots_init["velocities"][idx].copy()
-        return idx
+        super(LinearDotsSource, self).reset_dots()
+        self.velocities = self.dots_init["velocities"].copy()

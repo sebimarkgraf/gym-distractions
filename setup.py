@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="distractor_dmc2gym",
-    version="1.4.0",
+    version="1.5.0",
     author="Sebastian Markgraf",
     author_email="sebastian-markgraf@t-online.de",
     description="A gym like wrapper for dm_control with distractions.",
@@ -15,6 +15,7 @@ setup(
         "imageio",
         "scikit-video",
         "pytube @ git+https://github.com/kinshuk-h/pytube",
+        "n-link-simulator @ git+ssh://git@github.com/sebimarkgraf/n-link-simulator",
     ],
     extras_require={"dev": ["pytest", "pre-commit"]},
 )
