@@ -2,12 +2,15 @@ import numpy as np
 import pytest
 
 from distractor_dmc2gym.distractors import RandomDotsSource
+from distractor_dmc2gym.distractors.dots.dots_source import DotsSource
 from distractor_dmc2gym.merge_strategy import BackgroundMerge, FrontMerge
 
 
 @pytest.mark.parametrize("strategy", [FrontMerge, BackgroundMerge])
 def test_merge_timeseries(strategy):
-    distractor = RandomDotsSource(shape2d=(64, 64), difficulty="easy")
+    distractor = DotsSource(
+        shape2d=(64, 64), difficulty="easy", dots_behaviour=RandomDotsSource()
+    )
     strategy = strategy(source=distractor)
 
     T = 50

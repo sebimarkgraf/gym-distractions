@@ -1,7 +1,5 @@
-import copy
 from abc import ABCMeta, abstractmethod
-from enum import Enum, IntEnum
-from typing import NamedTuple
+from typing import NamedTuple, Protocol, TypeVar
 
 import cv2
 import numpy as np
@@ -10,21 +8,48 @@ from ..background_source import ImageSource
 
 DIFFICULTY_NUM_SETS = dict(easy=1, medium=2, hard=4)
 
+T = TypeVar("T", bound=dict)
+
 
 class Limits(NamedTuple):
     low: float
     high: float
 
 
-class GeneralDotsSource(ImageSource, metaclass=ABCMeta):
-    def __init__(self, *args, dots_size=0.12, **kwargs):
+class DotsBehaviour(Protocol[T]):
+    @abstractmethod
+    def init_state(
+        self,
+        num_dots: int,
+        x_lim: Limits,
+        y_lim: Limits,
+        np_random: np.random.Generator,
+    ) -> T:
+        pass
+
+    @abstractmethod
+    def update_state(self, state: T) -> T:
+        pass
+
+    @abstractmethod
+    def get_positions(self, state: T) -> np.array:
+        pass
+
+
+class DotsSource(ImageSource, metaclass=ABCMeta):
+    def __init__(self, *args, dots_size=0.12, dots_behaviour: DotsBehaviour, **kwargs):
         super().__init__(*args, **kwargs)
         self.num_dots = 12
         self.dots_size = dots_size
         self.x_lim = Limits(0.05, 0.95)
         self.y_lim = Limits(0.05, 0.95)
-        self.dots_init = self.init_dots()
-        self.reset()
+
+        self.dots_behaviour = dots_behaviour
+        self.dots_state = self.dots_behaviour.init_state(
+            self.num_dots, self.x_lim, self.y_lim, self._np_random
+        )
+        self.positions = self.dots_behaviour.get_positions(self.dots_state)
+        self.dots_parameters = self.init_dots()
 
     def get_info(self):
         info = super().get_info()
@@ -37,36 +62,22 @@ class GeneralDotsSource(ImageSource, metaclass=ABCMeta):
     def init_dots(self) -> dict:
         return {
             "colors": self._np_random.random((self.num_dots, 3)),
-            "positions": np.concatenate(
-                [
-                    self._np_random.uniform(*self.x_lim, size=(self.num_dots, 1)),
-                    self._np_random.uniform(*self.y_lim, size=(self.num_dots, 1)),
-                ],
-                axis=-1,
-            ),
             "sizes": self._np_random.uniform(0.8, 1.2, size=(self.num_dots, 1)),
         }
 
-    @abstractmethod
-    def update_positions(self):
-        pass
-
-    def reset_dots(self):
-        self.dots_init = self.init_dots()
-        self.colors, self.positions, self.sizes = (
-            self.dots_init["colors"].copy(),
-            self.dots_init["positions"].copy(),
-            self.dots_init["sizes"].copy(),
-        )
-
     def reset(self, seed=None):
         super().reset(seed)
-        self.reset_dots()
+        self.dots_parameters = self.init_dots()
+        self.dots_state = self.dots_behaviour.init_state(
+            self.num_dots, self.x_lim, self.y_lim, self._np_random
+        )
 
     def build_bg(self, w, h):
         bg = np.zeros((h, w, 3))
-        positions = self.positions * [[w, h]]
-        for position, size, color in zip(positions, self.sizes, self.colors):
+        positions = self.dots_behaviour.get_positions(self.dots_state) * [[w, h]]
+        sizes = self.dots_parameters["sizes"]
+        colors = self.dots_parameters["colors"]
+        for position, size, color in zip(positions, sizes, colors):
             cv2.circle(
                 bg,
                 (int(position[0]), int(position[1])),
@@ -75,7 +86,7 @@ class GeneralDotsSource(ImageSource, metaclass=ABCMeta):
                 -1,
             )
 
-        self.update_positions()
+        self.dots_state = self.dots_behaviour.update_state(self.dots_state)
         bg *= 255
         return bg.astype(np.uint8)
 

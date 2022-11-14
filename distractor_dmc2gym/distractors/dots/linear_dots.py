@@ -2,7 +2,7 @@ from enum import IntEnum
 
 import numpy as np
 
-from distractor_dmc2gym.distractors.dots import GeneralDotsSource
+from .dots_source import DotsBehaviour, Limits, T
 
 
 class GravitationalConstant(IntEnum):
@@ -11,27 +11,37 @@ class GravitationalConstant(IntEnum):
     IDEAL_GAS = 0
 
 
-class LinearDotsSource(GeneralDotsSource):
+class LinearDotsSource(DotsBehaviour):
     def __init__(
         self,
-        *args,
         base_velocity: float = 0.5,
         gravitation: GravitationalConstant = GravitationalConstant.IDEAL_GAS,
-        **kwargs
     ):
         self.v = base_velocity
-        super(LinearDotsSource, self).__init__(*args, **kwargs)
         self.gravitation = gravitation
 
-    def init_dots(self):
+    def init_state(
+        self,
+        num_dots: int,
+        x_lim: Limits,
+        y_lim: Limits,
+        np_random: np.random.Generator,
+    ) -> T:
         return {
-            **super(LinearDotsSource, self).init_dots(),
-            "velocities": (
-                self._np_random.normal(0, 0.01, size=(self.num_dots, 2)) * self.v
+            "positions": np.concatenate(
+                [
+                    np_random.uniform(*x_lim, size=(num_dots, 1)),
+                    np_random.uniform(*y_lim, size=(num_dots, 1)),
+                ],
+                axis=1,
             ),
+            "velocities": (np_random.normal(0, 0.01, size=(num_dots, 2)) * self.v),
+            "sizes": np_random.uniform(0.8, 1.2, size=(num_dots, 1)),
+            "x_lim": x_lim,
+            "y_lim": y_lim,
         }
 
-    def update_positions(self):
+    def update_state(self, state: T) -> T:
         def compute_acceleration(
             positions: np.array, sizes: np.array, gravitation: int
         ):
@@ -49,20 +59,30 @@ class LinearDotsSource(GeneralDotsSource):
             return accelerations
 
         accelerations = compute_acceleration(
-            np.array(self.positions), np.array(self.sizes), self.gravitation
+            state["positions"], state["sizes"], self.gravitation
         )
-        self.velocities += accelerations
-        self.positions += self.velocities
+        velocities = state["velocities"] + accelerations
+        positions = state["positions"] + velocities
 
-        for i in range(self.positions.shape[0]):
-            self._limit_position(i)
+        new_state = {
+            **state,
+            "positions": positions,
+            "velocities": velocities,
+        }
 
-    def _limit_position(self, i):
-        if not self.x_lim.high >= self.positions[i][0] >= self.x_lim.low:
-            self.velocities[i][0] = -self.velocities[i][0]
-        if not self.y_lim.high >= self.positions[i][1] >= self.y_lim.low:
-            self.velocities[i][1] = -self.velocities[i][1]
+        new_state = self._limit_positions(
+            new_state, x_lim=state["x_lim"], y_lim=state["y_lim"]
+        )
+        return new_state
 
-    def reset_dots(self):
-        super(LinearDotsSource, self).reset_dots()
-        self.velocities = self.dots_init["velocities"].copy()
+    def get_positions(self, state: T) -> np.array:
+        return state["positions"]
+
+    def _limit_positions(self, state: T, x_lim: Limits, y_lim: Limits) -> T:
+        for i in range(state["positions"].shape[0]):
+            if not x_lim.high >= state["positions"][i][0] >= x_lim.low:
+                state["velocities"][i][0] = -state["velocities"][i][0]
+            if not y_lim.high >= state["positions"][i][1] >= y_lim.low:
+                state["velocities"][i][1] = -state["velocities"][i][1]
+
+        return state

@@ -13,13 +13,14 @@ from .distractors import (
     RandomVideoSource,
 )
 from .distractors.dots import (
-    ConstantDotsSource,
+    ConstantDots,
     EpisodeDotsSource,
     LinearDotsSource,
     PendulumDotsSource,
     QuadLinkDotsSource,
     RandomDotsSource,
 )
+from .distractors.dots.dots_source import DotsSource
 from .enums import ImageSourceEnum
 from .merge_strategy import strategies
 
@@ -36,19 +37,27 @@ def map_distract_type_to_distractor(
             )
             distract_type = ImageSourceEnum.DOTS_LINEAR
 
-        default_types = {
-            ImageSourceEnum.COLOR: RandomColorSource,
-            ImageSourceEnum.NOISE: NoiseSource,
+        dot_types = {
             ImageSourceEnum.DOTS_LINEAR: LinearDotsSource,
-            ImageSourceEnum.DOTS_CONSTANT: ConstantDotsSource,
+            ImageSourceEnum.DOTS_CONSTANT: ConstantDots,
             ImageSourceEnum.DOTS_EPISODE: EpisodeDotsSource,
             ImageSourceEnum.DOTS_RANDOM: RandomDotsSource,
             ImageSourceEnum.DOTS_PENDULUM: PendulumDotsSource,
             ImageSourceEnum.DOTS_QUADLINK: QuadLinkDotsSource,
         }
 
-        if distract_type in default_types:
-            return default_types[distract_type](shape2d, difficulty)
+        if distract_type in dot_types:
+            behaviour = dot_types[distract_type]()
+            return DotsSource(
+                shape2d=shape2d, difficulty=difficulty, dots_behaviour=behaviour
+            )
+
+        simple_types = {
+            ImageSourceEnum.COLOR: RandomColorSource,
+            ImageSourceEnum.NOISE: NoiseSource,
+        }
+        if distract_type in simple_types:
+            return simple_types[distract_type](shape2d, difficulty)
 
         video_distractors = {
             ImageSourceEnum.VIDEO: RandomVideoSource,

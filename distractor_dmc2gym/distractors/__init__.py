@@ -1,6 +1,6 @@
 from .background_source import ImageSource
 from .dots import (
-    ConstantDotsSource,
+    ConstantDots,
     EpisodeDotsSource,
     LinearDotsSource,
     PendulumDotsSource,
@@ -23,5 +23,5 @@ __all__ = [
     "QuadLinkDotsSource",
     "PendulumDotsSource",
     "EpisodeDotsSource",
-    "ConstantDotsSource",
+    "ConstantDots",
 ]

@@ -1,15 +1,26 @@
-from distractor_dmc2gym.distractors.dots.dots_source import GeneralDotsSource
+import numpy as np
+
+from distractor_dmc2gym.distractors.dots.dots_source import DotsBehaviour, Limits, T
 
 
-class ConstantDotsSource(GeneralDotsSource):
-    def update_positions(self):
-        """We do not update Positions here"""
-        pass
+class ConstantDots(DotsBehaviour):
+    def init_state(
+        self,
+        num_dots: int,
+        x_lim: Limits,
+        y_lim: Limits,
+        np_random: np.random.Generator,
+    ) -> T:
+        return {
+            # Fix always yield the same
+            "positions": np.stack(
+                [np.linspace(*x_lim, num=num_dots), np.linspace(*y_lim, num=num_dots)],
+                axis=1,
+            )
+        }
 
-    def reset_dots(self):
-        """We do not update the Dots in new episodes"""
-        self.colors, self.positions, self.sizes = (
-            self.dots_init["colors"].copy(),
-            self.dots_init["positions"].copy(),
-            self.dots_init["sizes"].copy(),
-        )
+    def update_state(self, state: T) -> T:
+        return state
+
+    def get_positions(self, state: T) -> np.array:
+        return state["positions"]

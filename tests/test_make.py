@@ -80,7 +80,14 @@ def test_higher_action_repeat_distracted(action_repeat, distraction_location):
 
 @pytest.mark.parametrize(
     "distraction",
-    ["dots_linear", "dots_constant", "dots_episode", "dots_pendulum", "dots_random"],
+    [
+        "dots_linear",
+        "dots_constant",
+        "dots_episode",
+        "dots_pendulum",
+        "dots_random",
+        "dots_quadlink",
+    ],
 )
 def test_dots_sources(distraction):
     env = make(
