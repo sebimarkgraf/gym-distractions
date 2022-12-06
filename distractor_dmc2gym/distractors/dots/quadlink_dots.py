@@ -4,6 +4,13 @@ from n_link_sim import simulate_quad_link
 from .dots_source import DotsBehaviour, Limits, T
 
 
+class QuadLinkState:
+    angles: np.array
+    velocities: np.array
+    lengths: np.array
+    start_positions: np.array
+
+
 class QuadLinkDotsSource(DotsBehaviour):
     def __init__(
         self,
@@ -27,7 +34,7 @@ class QuadLinkDotsSource(DotsBehaviour):
         x_lim: Limits,
         y_lim: Limits,
         np_random: np.random.Generator,
-    ) -> T:
+    ) -> QuadLinkState:
         return {
             "angles": np_random.uniform(-np.pi, np.pi, size=(num_dots, 4)),
             "velocities": np.zeros((num_dots, 4)),
@@ -41,13 +48,10 @@ class QuadLinkDotsSource(DotsBehaviour):
             ),
         }
 
-    def update_state(self, state: T) -> T:
-        return {
-            **state,
-            **self._transition_function(state),
-        }
+    def update_state(self, state: QuadLinkState) -> QuadLinkState:
+        return self._transition_function(state)
 
-    def _transition_function(self, state):
+    def _transition_function(self, state: QuadLinkState) -> QuadLinkState:
         quadlink_state = np.empty(
             (
                 state["angles"].shape[0],
@@ -76,7 +80,7 @@ class QuadLinkDotsSource(DotsBehaviour):
         new_angles = result[:, 0:8:2]
         new_velocities = result[:, 1:8:2]
 
-        return {"angles": new_angles, "velocities": new_velocities}
+        return {**state, "angles": new_angles, "velocities": new_velocities}
 
     def get_positions(self, state: T) -> np.array:
         positions = state["start_positions"].copy()

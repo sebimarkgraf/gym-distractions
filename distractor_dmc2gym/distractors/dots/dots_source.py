@@ -1,5 +1,12 @@
 from abc import ABCMeta, abstractmethod
-from typing import NamedTuple, Protocol, TypeVar
+from typing import NamedTuple, TypeVar
+
+try:
+    from typing import Protocol
+except ImportError:
+    from abc import ABC
+
+    Protocol = ABC
 
 import cv2
 import numpy as np
@@ -16,7 +23,7 @@ class Limits(NamedTuple):
     high: float
 
 
-class DotsBehaviour(Protocol[T]):
+class DotsBehaviour(Protocol):
     @abstractmethod
     def init_state(
         self,
@@ -28,11 +35,11 @@ class DotsBehaviour(Protocol[T]):
         pass
 
     @abstractmethod
-    def update_state(self, state: T) -> T:
+    def update_state(self, state):
         pass
 
     @abstractmethod
-    def get_positions(self, state: T) -> np.array:
+    def get_positions(self, state) -> np.array:
         pass
 
 

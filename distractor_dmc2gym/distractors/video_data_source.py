@@ -1,9 +1,8 @@
 import json
 import logging
-import os
 import random
 import tarfile
-from functools import cache, lru_cache
+from functools import lru_cache
 from io import BytesIO
 from pathlib import Path
 from zipfile import ZipFile
@@ -206,7 +205,7 @@ class DAVISDataSource(RandomVideoSource):
         zipfile.extractall(path)
         logging.info("Download finished.")
 
-    @cache
+    @lru_cache()
     def read_in_filepath(self, file_path):
         bg_array = []
         mask_array = []

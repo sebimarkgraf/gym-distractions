@@ -1,5 +1,4 @@
 .idea
-local_dmc2gym\__pycache__\
 *.pyc
 *.mp4
 *.pyc
