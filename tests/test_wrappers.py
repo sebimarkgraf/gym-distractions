@@ -1,10 +1,8 @@
-import os
-
 import numpy as np
 import pytest
 from PIL import Image
 
-from distractor_dmc2gym.wrappers import DMCWrapper
+from gym_distractions.wrappers import DMCWrapper
 
 default_args = {
     "domain_name": "cheetah",
@@ -21,7 +19,7 @@ def create_image(dir, width=1920, height=1080, num_of_images=100):
     num_of_images = int(num_of_images)
 
     for n in range(num_of_images):
-        filename = os.path.join(dir, f"{n}.png")
+        filename = dir / f"{n}.png"
         rgb_array = np.random.rand(height, width, 4) * 255
         img = Image.fromarray(rgb_array.astype("uint8")).convert("RGBA")
         img.save(filename)

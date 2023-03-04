@@ -1,7 +1,6 @@
 import pytest
-from gym.wrappers import TimeLimit
 
-from distractor_dmc2gym import make
+from gym_distractions import make
 
 
 def test_make():

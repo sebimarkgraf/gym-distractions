@@ -1,0 +1,68 @@
+[tool.pdm]
+
+[project]
+name = "gym-distractions"
+version = "0.1.0"
+description = "Environment with different disk dynamics for distractions in RL environments"
+authors = [
+    {name = "Sebastian Markgraf", email = "Sebastian-Markgraf@t-online.de"},
+]
+dependencies = [
+    "gym>=0.26.2",
+    "dm_control >= 1.0.0",
+    "opencv-python",
+    "numpy",
+    "imageio",
+    "scikit-video",
+    "pytube @ git+https://github.com/kinshuk-h/pytube",
+    "n-link-simulator @ git+ssh://git@github.com/sebimarkgraf/n-link-simulator@main",
+
+]
+requires-python = ">=3.8"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pre-commit",
+    "pytest-cov",
+    "pyinstrument",
+    "black",
+    "ruff>=0.0.238",
+]
+
+[build-system]
+requires = ["pdm-pep517>=1.0"]
+build-backend = "pdm.pep517.api"
+
+
+[tool.isort]
+profile = "black"
+
+
+[tool.ruff]
+select = [
+    "E", # pycodestylye errors
+    "F", # Pyflakes
+    "D", # pydocstyle
+    "I", # isort
+    "ERA", # eradicate
+    "SIM", # flake8-simplify
+    "PTH", # flake8-pathlib,
+    "T20", # flake8-no-print
+    "PD", # pandas-vet
+]
+ignore = [
+    # Ignore missing docstrings
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D203",
+    "D213"
+]

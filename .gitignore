@@ -4,3 +4,7 @@
 *.pyc
 venv
 *.egg-info
+
+.pdm.toml
+.ruff_cache
+.venv

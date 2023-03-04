@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
-from distractor_dmc2gym.distractors import RandomDotsSource
-from distractor_dmc2gym.distractors.dots.dots_source import DotsSource
-from distractor_dmc2gym.merge_strategy import BackgroundMerge, FrontMerge
+from gym_distractions.distractors import RandomDotsSource
+from gym_distractions.distractors.dots.dots_source import DotsSource
+from gym_distractions.merge_strategy import BackgroundMerge, FrontMerge
 
 
 @pytest.mark.parametrize("strategy", [FrontMerge, BackgroundMerge])

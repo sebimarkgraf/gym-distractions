@@ -1,4 +1,5 @@
-# Distractor DMC2GYM
+# Gym Distractions
+
 
 ## Instructions
 Installation:

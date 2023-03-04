@@ -1,6 +1,6 @@
 import numpy as np
 
-from distractor_dmc2gym.distractors.dots.dots_source import DotsBehaviour, Limits, T
+from .dots_source import DotsBehaviour, Limits, T
 
 
 class ConstantDots(DotsBehaviour):

@@ -1,8 +1,7 @@
-import cv2
 import pytest
 from gym.utils.env_checker import check_env
 
-from distractor_dmc2gym import make
+from gym_distractions import make
 
 
 @pytest.mark.parametrize("distraction", [None, "dots", "noise", "color"])

@@ -1,6 +1,6 @@
 import numpy as np
 
-from distractor_dmc2gym.distractors.dots.dots_source import DotsBehaviour, Limits, T
+from .dots_source import DotsBehaviour, Limits, T
 
 
 class PendulumDotsSource(DotsBehaviour):
@@ -58,7 +58,6 @@ class PendulumDotsSource(DotsBehaviour):
     def _transition_function(self, state: T):
         nSteps = self.dt / self.sim_dt
         if nSteps != np.round(nSteps):
-            print("Warning from Pendulum: dt does not match up")
             nSteps = np.round(nSteps)
 
         inertia = self.mass * (state["lengths"] ** 2) / 3

@@ -1,6 +1,6 @@
 import numpy as np
 
-from distractor_dmc2gym.distractors import ImageSource
+from .background_source import ImageSource
 
 
 class RandomColorSource(ImageSource):

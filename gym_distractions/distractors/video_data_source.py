@@ -113,7 +113,7 @@ VALIDATION_VIDEOS = [
     "soapbox",
 ]
 
-DAVIS_URL = "https://data.vision.ee.ethz.ch/csergi/share/davis/DAVIS-2017-Unsupervised-trainval-480p.zip"
+DAVIS_URL = "https://data.vision.ee.ethz.ch/csergi/share/davis/DAVIS-2017-Unsupervised-trainval-480p.zip"  # noqa: E501
 KINETICS400_URL = (
     "https://storage.googleapis.com/deepmind-media/Datasets/kinetics400.tar.gz"
 )
@@ -139,8 +139,9 @@ def get_img_paths(difficulty, data_path: Path, train_or_val=None):
     if num_frames is not None:
         if num_frames > len(image_paths) or num_frames < 0:
             raise ValueError(
-                f"`num_background_paths` is {num_frames} but should not be larger than the "
-                f"number of available background paths ({len(image_paths)}) and at least 0."
+                f"`num_background_paths` is {num_frames} but should "
+                f"not be larger than the number of available "
+                f"background paths ({len(image_paths)}) and at least 0."
             )
         image_paths = image_paths[:num_frames]
 
@@ -259,8 +260,9 @@ class Kinetics400DataSource(RandomVideoSource):
         if num_frames is not None:
             if num_frames > len(image_paths) or num_frames < 0:
                 raise ValueError(
-                    f"`num_background_paths` is {num_frames} but should not be larger than the "
-                    f"number of available background paths ({len(image_paths)}) and at least 0."
+                    f"`num_background_paths` is {num_frames} but should "
+                    f"not be larger than the number of available "
+                    f"background paths ({len(image_paths)}) and at least 0."
                 )
             image_paths = image_paths[:num_frames]
 
@@ -286,10 +288,10 @@ class Kinetics400DataSource(RandomVideoSource):
         logging.info("Download finished.")
 
     def get_url(self, path):
-        with open(path) as f:
+        with Path(path).open() as f:
             data = json.load(f)
         urls = []
-        for k in data.keys():
+        for k in data:
             if data[k]["annotations"]["label"] == "driving car":
                 urls.append(data[k]["url"])
         return urls
@@ -308,8 +310,7 @@ class Kinetics400DataSource(RandomVideoSource):
                             itag = stream.itag
                             break
                     video.streams.get_by_itag(itag).download(dest_path)
-                except Exception as e:
-                    print(f"Exception encountered in Download: {e}")
+                except Exception:
                     continue
 
     def read_in_file(self, fname, grayscale=False):

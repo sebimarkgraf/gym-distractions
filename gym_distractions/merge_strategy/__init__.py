@@ -17,8 +17,10 @@ class BaseStrategy(metaclass=ABCMeta):
         pass
 
     def merge_timeseries(self, obs: np.array) -> np.array:
-        """
-        Used for offline adding of observations
+        """Merge timeseries of observations.
+
+        Used for offline adding of observations to datasets.
+
         :param obs:
         :return:
         """

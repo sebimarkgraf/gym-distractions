@@ -31,8 +31,8 @@ def map_distract_type_to_distractor(
     if isinstance(distract_type, str):
         if distract_type == ImageSourceEnum.DOTS:
             warnings.warn(
-                "Dots were splitted in multiple classes. Please update your dots source to one"
-                "of the new types.",
+                "Dots were split in multiple classes. "
+                "Please update your dots source to one of the new types.",
                 DeprecationWarning,
             )
             distract_type = ImageSourceEnum.DOTS_LINEAR
@@ -70,8 +70,8 @@ def map_distract_type_to_distractor(
             )
 
         raise Exception(
-            f"Distractor of type {distract_type} not known. Please choose a distractor type from "
-            f"distractor type enum."
+            f"Distractor of type {distract_type} not known. "
+            f"Please choose a distractor type from distractor type enum."
         )
 
     else:

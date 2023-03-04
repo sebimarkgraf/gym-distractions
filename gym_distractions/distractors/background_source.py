@@ -29,5 +29,5 @@ class ImageSource(object, metaclass=ABCMeta):
 
     def save_info(self, path: Path):
         info = {self.__class__.__name__: self.get_info()}
-        with open(path / "distractors_info.json", "w") as f:
+        with (path / "distractors_info.json").open("w") as f:
             json.dump(info, f, indent=4)

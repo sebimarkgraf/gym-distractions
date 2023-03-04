@@ -5,12 +5,11 @@ import gym
 from gym.envs.registration import register
 
 from .distractors import ImageSource
-from .enums import DistractorLocations, ImageSourceEnum
 from .merge_strategy import BaseStrategy
 
 register(
     id="deepmind_control-v1",
-    entry_point="distractor_dmc2gym.wrappers:DMCWrapper",
+    entry_point="gym_distractions.wrappers:DMCWrapper",
 )
 
 
