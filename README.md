@@ -1,16 +1,27 @@
 # Gym Distractions
 
+This package provides a number of distractions that can be added to pixel based gym environments.
+It directly includes the creation of MuJoCo Environments with these distractions.
 
-## Instructions
-Installation:
+## Installation
+Release install from pypi
+``` bash
+pip install gym-distractions
+```
+
+Installation of latest from GIT Repository
 ``` bash
 pip install -e git+ssh://git@github.com/ALRhub/occluded_dmc.git
 ```
-Use distractor_dmc2gym by importing it and using the make() method.
-```
-import distractor_dmc2gym as dmc2gym
 
-env = dmc2gym.make(domain_name,
+
+## Using MuJoCo Environments
+
+Use the MuJoCo environments by importing it and using the make() method.
+```
+import gym_distractions
+
+env = gym_distractions.make(domain_name,
                     task_name,
                     distract_type,
                     ground,
@@ -51,10 +62,6 @@ an ideal gas with no collison. If you want to change those default settings, or 
 sizes/velocitys/positions/quantity/or some others of dots,
 you can modify them in file 'background_source.py', class 'RandomDotsSource' by yourself.
 
-you can modify 'test_dmc2gym.py' and test.
-```
-python test_dmc2gym.py
-```
 
 ## Attribution
 Based on work of:
