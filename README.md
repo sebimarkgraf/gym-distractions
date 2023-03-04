@@ -68,3 +68,10 @@ Based on work of:
 * Philipp Becker
 * Yiping Wei
 * Yitian Yang
+
+
+## Citing This Work
+If you find this work helpful, please cite the corresponding publication
+``` bibtex
+TODO
+```
