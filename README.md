@@ -55,3 +55,9 @@ you can modify 'test_dmc2gym.py' and test.
 ```
 python test_dmc2gym.py
 ```
+
+## Attribution
+Based on work of:
+* Philipp Becker
+* Yiping Wei
+* Yitian Yang
