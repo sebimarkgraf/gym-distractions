@@ -8,3 +8,4 @@ venv
 .pdm.toml
 .ruff_cache
 .venv
+.coverage
