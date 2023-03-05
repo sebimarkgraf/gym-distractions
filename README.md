@@ -1,5 +1,7 @@
 # Gym Distractions
 
+[![codecov](https://codecov.io/github/sebimarkgraf/gym-distractions/branch/main/graph/badge.svg?token=MBTD98P1JB)](https://codecov.io/github/sebimarkgraf/gym-distractions)
+
 This package provides a number of distractions that can be added to pixel based gym environments.
 It directly includes the creation of MuJoCo Environments with these distractions.
 
