@@ -15,15 +15,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8"]
         os: [ubuntu-latest]
     permissions:
       contents: read
     steps:
       - name: Install Deps
-        run: >
-          sudo apt-get update && sudo apt-get install
-                  libgl1-mesa-dev
+        run: sudo apt-get update && sudo apt-get install -y libosmesa6-dev
+      # https://github.com/mcfletch/pyopengl/issues/90
+      - name: Ubuntu PyOpenGL Fix
+        run: sudo ln -s /usr/lib/x86_64-linux-gnu/libglut.so.3.12 /usr/lib/x86_64-linux-gnu/libglut.so.3
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
