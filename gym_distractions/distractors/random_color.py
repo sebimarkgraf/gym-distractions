@@ -4,11 +4,11 @@ from .background_source import ImageSource
 
 
 class RandomColorSource(ImageSource):
-    def __init__(self, *args, intensity=1):
-        super().__init__(*args)
+    def __init__(self, *args, intensity=1.0, **kwargs):
+        super().__init__(*args, **kwargs)
         self.intensity = intensity
         self.bg = np.zeros((self.shape[0], self.shape[1], 3))
-        self.mask = np.ones((self.shape[0], self.shape[1]))
+        self.mask = np.ones((self.shape[0], self.shape[1]), dtype=bool)
         self.reset()
 
     def reset(self, seed=None):

@@ -6,11 +6,9 @@ from typing import Tuple
 import numpy as np
 from gym.utils.seeding import np_random
 
-DIFFICULTY_SCALE = dict(easy=0.1, medium=0.2, hard=0.3)
-
 
 class ImageSource(object, metaclass=ABCMeta):
-    def __init__(self, shape2d, difficulty):
+    def __init__(self, shape2d, difficulty="hard"):
         self._np_random, seed = np_random()
         self.shape = shape2d
         self.difficulty = difficulty

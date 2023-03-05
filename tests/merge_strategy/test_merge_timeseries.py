@@ -1,15 +1,18 @@
 import numpy as np
 import pytest
 
-from gym_distractions.distractors import RandomDotsSource
-from gym_distractions.distractors.dots.dots_source import DotsSource
-from gym_distractions.merge_strategy import BackgroundMerge, FrontMerge
+from gym_distractions.distractors import NoiseSource
+from gym_distractions.merge_strategy import (
+    BackgroundMerge,
+    FrontAndBackMerge,
+    FrontMerge,
+)
 
 
-@pytest.mark.parametrize("strategy", [FrontMerge, BackgroundMerge])
+@pytest.mark.parametrize("strategy", [FrontMerge, BackgroundMerge, FrontAndBackMerge])
 def test_merge_timeseries(strategy):
-    distractor = DotsSource(
-        shape2d=(64, 64), difficulty="easy", dots_behaviour=RandomDotsSource()
+    distractor = NoiseSource(
+        shape2d=(64, 64),
     )
     strategy = strategy(source=distractor)
 
@@ -21,6 +24,23 @@ def test_merge_timeseries(strategy):
 
     assert augmented_obs is not None
     assert augmented_obs.shape == (T, *image_shape)
+    assert np.array_equal(
+        original_obs, observations
+    ), "Should not write on given observations"
+
+
+@pytest.mark.parametrize("strategy", [FrontMerge, BackgroundMerge, FrontAndBackMerge])
+def test_merge(strategy):
+    distractor = NoiseSource(shape2d=(64, 64))
+    strategy = strategy(source=distractor)
+
+    image_shape = (64, 64, 3)
+    observations = np.random.randn(*image_shape)
+    original_obs = observations.copy()
+    augmented_obs = strategy.merge(observations)
+
+    assert augmented_obs is not None
+    assert augmented_obs.shape == image_shape
     assert np.array_equal(
         original_obs, observations
     ), "Should not write on given observations"

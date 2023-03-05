@@ -4,8 +4,8 @@ from .background_source import ImageSource
 
 
 class NoiseSource(ImageSource):
-    def __init__(self, *args, strength=255, intensity=1):
-        super().__init__(*args)
+    def __init__(self, *args, strength=255, intensity=1, **kwargs):
+        super().__init__(*args, **kwargs)
         self.strength = strength
         self.intensity = intensity
 
@@ -15,7 +15,7 @@ class NoiseSource(ImageSource):
         return info
 
     def get_image(self):
-        w, h = self.shape
-        img = self._np_random.random((w, h, 3)) * self.strength
+        h, w = self.shape
+        img = self._np_random.random((h, w, 3)) * self.strength
         img = img.astype(np.uint8)
-        return img, np.ones((w, h))
+        return img, np.ones((h, w), dtype=bool)
