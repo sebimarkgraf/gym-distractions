@@ -14,7 +14,9 @@ def test(session):
         "pdm",
         "run",
         "pytest",
-        "--cov=gym_distractions",
         "--cov-report=term-missing",
-        *session.posargs
+        "--cov-report=xml",
+        "--cov-report=term",
+        "--cov=gym_distractions",
+        *session.posargs,
     )
