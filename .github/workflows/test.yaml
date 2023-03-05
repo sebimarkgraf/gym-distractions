@@ -31,5 +31,7 @@ jobs:
       - name: Run tests
         run: |
           pipx run nox
+        env:
+          MUJOCO_GL: disable
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
