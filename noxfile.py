@@ -16,5 +16,6 @@ def test(session):
         "pytest",
         "--cov=gym_distractions",
         "--cov-report=term-missing",
-        *session.posargs
+        *session.posargs,
+        env={"MUJOGO_GL": "osmesa"}
     )
