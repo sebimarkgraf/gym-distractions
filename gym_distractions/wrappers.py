@@ -1,82 +1,18 @@
-import warnings
+from pathlib import Path
+from typing import Optional, Type, Union
 
 import numpy as np
 from dm_control import suite
 from dm_env import specs
-from gym import core, spaces
+from gymnasium import core, spaces
 
-from .distractors import (
-    DAVISDataSource,
-    Kinetics400DataSource,
-    NoiseSource,
-    RandomColorSource,
-    RandomVideoSource,
+from . import BaseStrategy, ImageSource
+from .type_mappings import (
+    ImageSourceEnum,
+    MergeStrategies,
+    map_distract_type_to_distractor,
+    map_strategy_config,
 )
-from .distractors.dots import (
-    ConstantDots,
-    EpisodeDotsSource,
-    LinearDotsSource,
-    PendulumDotsSource,
-    QuadLinkDotsSource,
-    RandomDotsSource,
-)
-from .distractors.dots.dots_source import DotsSource
-from .enums import ImageSourceEnum
-from .merge_strategy import strategies
-
-
-def map_distract_type_to_distractor(
-    distract_type, shape2d, difficulty, background_dataset_path, train_or_val
-):
-    if isinstance(distract_type, str):
-        if distract_type == ImageSourceEnum.DOTS:
-            warnings.warn(
-                "Dots were split in multiple classes. "
-                "Please update your dots source to one of the new types.",
-                DeprecationWarning,
-            )
-            distract_type = ImageSourceEnum.DOTS_LINEAR
-
-        dot_types = {
-            ImageSourceEnum.DOTS_LINEAR: LinearDotsSource,
-            ImageSourceEnum.DOTS_CONSTANT: ConstantDots,
-            ImageSourceEnum.DOTS_EPISODE: EpisodeDotsSource,
-            ImageSourceEnum.DOTS_RANDOM: RandomDotsSource,
-            ImageSourceEnum.DOTS_PENDULUM: PendulumDotsSource,
-            ImageSourceEnum.DOTS_QUADLINK: QuadLinkDotsSource,
-        }
-
-        if distract_type in dot_types:
-            behaviour = dot_types[distract_type]()
-            return DotsSource(
-                shape2d=shape2d, difficulty=difficulty, dots_behaviour=behaviour
-            )
-
-        simple_types = {
-            ImageSourceEnum.COLOR: RandomColorSource,
-            ImageSourceEnum.NOISE: NoiseSource,
-        }
-        if distract_type in simple_types:
-            return simple_types[distract_type](shape2d, difficulty)
-
-        video_distractors = {
-            ImageSourceEnum.VIDEO: RandomVideoSource,
-            ImageSourceEnum.DAVIS: DAVISDataSource,
-            ImageSourceEnum.KINETICS: Kinetics400DataSource,
-        }
-        if distract_type in video_distractors:
-            return video_distractors[distract_type](
-                shape2d, difficulty, background_dataset_path, train_or_val
-            )
-
-        raise Exception(
-            f"Distractor of type {distract_type} not known. "
-            f"Please choose a distractor type from distractor type enum."
-        )
-
-    else:
-        # Given class
-        return distract_type(shape2d, difficulty)
 
 
 def _spec_to_box(spec):
@@ -110,27 +46,27 @@ def _flatten_obs(obs):
 
 
 class DMCWrapper(core.Env):
-    metadata = {"render.modes": ["rgb_array"]}
+    metadata = {"render_modes": ["rgb_array"]}
 
     def __init__(
         self,
-        domain_name,
-        task_name,
-        distract_type=None,
-        ground=None,
-        difficulty=None,
-        background_dataset_path=None,
-        train_or_val=None,
-        task_kwargs=None,
-        visualize_reward: bool = False,
-        from_pixels=False,
-        height=84,
-        width=84,
+        domain_name: str,
+        task_name: str,
+        distract_type: Optional[Union[Type[ImageSource], ImageSourceEnum]] = None,
+        ground: Optional[Union[MergeStrategies, Type[BaseStrategy]]] = None,
+        difficulty: str = "easy",
+        background_dataset_path: Optional[Path] = None,
+        task_kwargs: Optional[dict] = None,
+        from_pixels: bool = False,
+        height: int = 84,
+        width: int = 84,
         camera_id=0,
         frame_skip=1,
         environment_kwargs=None,
-        channels_first=True,
+        channels_first: bool = True,
+        render_mode: str = "rgb_array",
     ):
+        self._render_mode = render_mode
         self._from_pixels = from_pixels
         self._height = height
         self._width = width
@@ -142,7 +78,6 @@ class DMCWrapper(core.Env):
             domain_name=domain_name,
             task_name=task_name,
             task_kwargs=task_kwargs,
-            visualize_reward=visualize_reward,
             environment_kwargs=environment_kwargs,
         )
         self._env = suite.load(**self._env_args)
@@ -171,16 +106,14 @@ class DMCWrapper(core.Env):
         # background/foreground
         self._bg_source = None
         if distract_type is not None:
-            difficulty = "easy" if difficulty is None else difficulty
             shape2d = (height, width)
-            self._bg_source = map_distract_type_to_distractor(
-                distract_type,
-                shape2d,
-                difficulty,
-                background_dataset_path,
-                train_or_val,
+            self._bg_source = map_distract_type_to_distractor(distract_type)(
+                shape2d=shape2d,
+                difficulty=difficulty,
+                background_dataset_path=background_dataset_path,
             )
-            self.merger = strategies[ground](self._bg_source)
+
+            self.merger = map_strategy_config(ground)(self._bg_source)
 
     def __getattr__(self, name):
         return getattr(self._env, name)
@@ -251,7 +184,7 @@ class DMCWrapper(core.Env):
 
         return obs, reward, done, False, extra
 
-    def reset(self, seed=None, options=None):
+    def reset(self, seed: Optional[int] = None, options=None):
         super().reset(seed=seed)
         if seed is not None:
             self._env_args["task_kwargs"]["random"] = seed
@@ -267,10 +200,7 @@ class DMCWrapper(core.Env):
         info = self._getinfo(time_step)
         return obs, info
 
-    def render(
-        self, mode="rgb_array", height=None, width=None, camera_id=0, action=None
-    ):
-        assert mode == "rgb_array", f"only support rgb_array mode, given {mode}"
+    def render(self, height=None, width=None, camera_id=0, action=None):
         height = height or self._height
         width = width or self._width
         camera_id = camera_id or self._camera_id

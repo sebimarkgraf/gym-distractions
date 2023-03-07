@@ -1,6 +1,7 @@
 from .background_source import ImageSource
 from .dots import (
     ConstantDots,
+    DotsSource,
     EpisodeDotsSource,
     LinearDotsSource,
     PendulumDotsSource,
@@ -12,6 +13,7 @@ from .random_color import RandomColorSource
 from .video_data_source import DAVISDataSource, Kinetics400DataSource, RandomVideoSource
 
 __all__ = [
+    "DotsSource",
     "ImageSource",
     "NoiseSource",
     "RandomColorSource",

@@ -8,7 +8,7 @@ authors = [
     {name = "Sebastian Markgraf", email = "Sebastian-Markgraf@t-online.de"},
 ]
 dependencies = [
-    "gym>=0.26.2",
+    "gymnasium >= 0.27.0",
     "dm_control >= 1.0.0",
     "opencv-python",
     "numpy",

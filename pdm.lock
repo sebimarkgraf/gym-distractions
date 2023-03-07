@@ -145,21 +145,23 @@ version = "2.5.6"
 summary = "A ctypes-based wrapper for GLFW3."
 
 [[package]]
-name = "gym"
-version = "0.26.2"
-requires_python = ">=3.6"
-summary = "Gym: A universal API for reinforcement learning environments"
+name = "gymnasium"
+version = "0.27.1"
+requires_python = ">=3.7"
+summary = "A standard API for reinforcement learning and a diverse set of reference environments (formerly Gym)."
 dependencies = [
     "cloudpickle>=1.2.0",
-    "gym-notices>=0.0.4",
+    "gymnasium-notices>=0.0.1",
     "importlib-metadata>=4.8.0; python_version < \"3.10\"",
-    "numpy>=1.18.0",
+    "jax-jumpy>=0.2.0",
+    "numpy>=1.21.0",
+    "typing-extensions>=4.3.0",
 ]
 
 [[package]]
-name = "gym-notices"
-version = "0.0.8"
-summary = "Notices for gym"
+name = "gymnasium-notices"
+version = "0.0.1"
+summary = "Notices for gymnasium"
 
 [[package]]
 name = "identify"
@@ -197,6 +199,15 @@ name = "iniconfig"
 version = "2.0.0"
 requires_python = ">=3.7"
 summary = "brain-dead simple config-ini parsing"
+
+[[package]]
+name = "jax-jumpy"
+version = "0.2.0"
+requires_python = ">=3.7"
+summary = "Common backend for JAX or numpy."
+dependencies = [
+    "numpy>=1.18.0",
+]
 
 [[package]]
 name = "labmaze"
@@ -469,7 +480,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:1b49c45b91e18b6f1bbe2643fb9459ebd6a9224d4beffa895b9c5d30228ae527"
+content_hash = "sha256:8e9fb29533496516e603fe8e2370db249585feaab4844357d14f795fb4535fce"
 
 [metadata.files]
 "absl-py 1.4.0" = [
@@ -742,12 +753,13 @@ content_hash = "sha256:1b49c45b91e18b6f1bbe2643fb9459ebd6a9224d4beffa895b9c5d302
     {url = "https://files.pythonhosted.org/packages/bc/6e/c9035072dd83696fd45a9d1682d0bb8d55c8376f2723bbec9e93a2f0b575/glfw-2.5.6-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-macosx_11_0_arm64.whl", hash = "sha256:6dc055bd2ba625b56352369ad7a8d9b8f2c22756c5cb62518096de7c473da27a"},
     {url = "https://files.pythonhosted.org/packages/cd/29/25964d5f855053f033235a069eff111bdd1bc3f27aab32fb0d47b577b7f1/glfw-2.5.6-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-macosx_10_6_intel.whl", hash = "sha256:159c31d075afd36aa202da7ae26909081c2ee59599ea784aafa3d3b33a13ac9a"},
 ]
-"gym 0.26.2" = [
-    {url = "https://files.pythonhosted.org/packages/ab/b1/eb05a423eb801ab7d0715d6a3b28d92589e30b437052553df19ca2087240/gym-0.26.2.tar.gz", hash = "sha256:e0d882f4b54f0c65f203104c24ab8a38b039f1289986803c7d02cdbe214fbcc4"},
+"gymnasium 0.27.1" = [
+    {url = "https://files.pythonhosted.org/packages/35/2a/c63241f1ebc5c44c223d87ec06b08f3269f001dbddbea2fbdca7a85a47e3/gymnasium-0.27.1-py3-none-any.whl", hash = "sha256:aad97a8e31ce21da445f513ab25ad45312bd76666bd467227c923c1f3f908b1b"},
+    {url = "https://files.pythonhosted.org/packages/59/d2/7aaa82d8e85c98d8190bfbbaaade146d90e63d9ec8be77af0370cc19ccd7/gymnasium-0.27.1.tar.gz", hash = "sha256:b625772d1e794c214f992dd1b6ec9aed683a733a4638e51e841ef31ea711057a"},
 ]
-"gym-notices 0.0.8" = [
-    {url = "https://files.pythonhosted.org/packages/25/26/d786c6bec30fe6110fd3d22c9a273a2a0e56c0b73b93e25ea1af5a53243b/gym_notices-0.0.8-py3-none-any.whl", hash = "sha256:e5f82e00823a166747b4c2a07de63b6560b1acb880638547e0cabf825a01e463"},
-    {url = "https://files.pythonhosted.org/packages/b4/62/d312681b09cacf77d04237a2815653c58e5031998bb613ce114b85fc3f57/gym-notices-0.0.8.tar.gz", hash = "sha256:ad25e200487cafa369728625fe064e88ada1346618526102659b4640f2b4b911"},
+"gymnasium-notices 0.0.1" = [
+    {url = "https://files.pythonhosted.org/packages/27/57/257106672b5eeb5735a239c54f0e74a0e2e69ebec592f3643c0ee1a08d5e/gymnasium-notices-0.0.1.tar.gz", hash = "sha256:3e8c868046f56dea84c949cc7e97383cccfab27152fc3f4968754e4c9c087ab9"},
+    {url = "https://files.pythonhosted.org/packages/d4/88/2520e5851ac21a66e32c7be2f718f3a329253c018a8781e1143fe27c8065/gymnasium_notices-0.0.1-py3-none-any.whl", hash = "sha256:be68c8399e88b554b6db1eb3c484b00f229cbe5c930f64f6ae9cd1a6e93db1c5"},
 ]
 "identify 2.5.18" = [
     {url = "https://files.pythonhosted.org/packages/08/36/eb2b142e245f69b0cf7b91a3f48769e414f681bd7ee04206ec0eba485e56/identify-2.5.18.tar.gz", hash = "sha256:89e144fa560cc4cffb6ef2ab5e9fb18ed9f9b3cb054384bab4b95c12f6c309fe"},
@@ -768,6 +780,10 @@ content_hash = "sha256:1b49c45b91e18b6f1bbe2643fb9459ebd6a9224d4beffa895b9c5d302
 "iniconfig 2.0.0" = [
     {url = "https://files.pythonhosted.org/packages/d7/4b/cbd8e699e64a6f16ca3a8220661b5f83792b3017d0f79807cb8708d33913/iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
     {url = "https://files.pythonhosted.org/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
+]
+"jax-jumpy 0.2.0" = [
+    {url = "https://files.pythonhosted.org/packages/54/31/3467f6dfeac9c31b782b089b18e78b5f3b01aed6e1e1b5601745b1a3e6ae/jax_jumpy-0.2.0-py3-none-any.whl", hash = "sha256:eaa7587e3fda30278011ca4e815bf9ac6b71db29502c0fa15908eb532c206a9e"},
+    {url = "https://files.pythonhosted.org/packages/7f/10/f8530524cd7d6b076ca1e99ae6082d545e9304332ce85aeb78765e7c2a5f/jax_jumpy-0.2.0.tar.gz", hash = "sha256:8ffe4e7609461d13decc97269ff48a3ee8d7570c96cbcc82487f893a3dd65093"},
 ]
 "labmaze 1.0.6" = [
     {url = "https://files.pythonhosted.org/packages/0d/7e/787e0d3c17e29a46484158460e21fcf5cd7a076c81b2ec31807f2753ea43/labmaze-1.0.6-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:70635d1cdb0147a02efb6b3f607a52cdc51723bc3dcc42717a0d4ef55fa0a987"},
@@ -1185,6 +1201,7 @@ content_hash = "sha256:1b49c45b91e18b6f1bbe2643fb9459ebd6a9224d4beffa895b9c5d302
     {url = "https://files.pythonhosted.org/packages/29/2f/9d1c05003494c445a1bc6b6fb14baf098ed0e3683d7bc3aaa3333439e908/ruff-0.0.254-py3-none-musllinux_1_2_i686.whl", hash = "sha256:09c764bc2bd80c974f7ce1f73a46092c286085355a5711126af351b9ae4bea0c"},
     {url = "https://files.pythonhosted.org/packages/40/bf/7fad53f42418f03f254374b3bfd8e73cd2a974ac778677840c4ac1808adc/ruff-0.0.254-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ac1429be6d8bd3db0bf5becac3a38bd56f8421447790c50599cd90fd53417ec4"},
     {url = "https://files.pythonhosted.org/packages/5d/1a/3769a1da21236c06fbc300048c0da4157ee7523bbf82ebf53bd73412e3ee/ruff-0.0.254-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:8deba44fd563361c488dedec90dc330763ee0c01ba54e17df54ef5820079e7e0"},
+    {url = "https://files.pythonhosted.org/packages/93/b4/14cb42614daf79be830a922325d982ea31f64c5ade1b312df34b331ed377/ruff-0.0.254.tar.gz", hash = "sha256:0eb66c9520151d3bd950ea43b3a088618a8e4e10a5014a72687881e6f3606312"},
     {url = "https://files.pythonhosted.org/packages/9c/cb/31358d6e6f53be90d75d5ce9fd9d3c9633827b363aefd5279775d4194c5d/ruff-0.0.254-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:0deb1d7226ea9da9b18881736d2d96accfa7f328c67b7410478cc064ad1fa6aa"},
     {url = "https://files.pythonhosted.org/packages/aa/66/72e8531e8c1478be542097c6e0ca7d4579f0d950c1c081ed2ede082ee7ef/ruff-0.0.254-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:d4385cdd30153b7aa1d8f75dfd1ae30d49c918ead7de07e69b7eadf0d5538a1f"},
     {url = "https://files.pythonhosted.org/packages/ae/f9/8c68341ac9f6f612682defcbc51ef1d04180a13cce41f21d92596e7de332/ruff-0.0.254-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:2fc21d060a3197ac463596a97d9b5db2d429395938b270ded61dd60f0e57eb21"},

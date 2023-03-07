@@ -13,7 +13,7 @@ pip install gym-distractions
 
 Installation of latest from GIT Repository
 ``` bash
-pip install -e git+ssh://git@github.com/ALRhub/occluded_dmc.git
+pip install -e git+https://github.com/sebimarkgraf/gym-distractions.git
 ```
 
 

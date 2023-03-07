@@ -10,7 +10,6 @@ def test_make():
         None,
         "color",
         from_pixels=True,
-        visualize_reward=False,
     )
 
 
@@ -20,7 +19,6 @@ def test_image_size():
         "run",
         distraction_source=None,
         from_pixels=True,
-        visualize_reward=False,
         height=128,
         width=256,
         channels_first=False,
@@ -36,7 +34,6 @@ def test_action_repeat(action_repeat):
         "run",
         distraction_source=None,
         from_pixels=True,
-        visualize_reward=False,
         height=128,
         width=256,
         frame_skip=action_repeat,
@@ -63,7 +60,6 @@ def test_higher_action_repeat_distracted(action_repeat, distraction_location):
         distraction_location=distraction_location,
         distraction_source="dots_linear",
         from_pixels=True,
-        visualize_reward=False,
         height=128,
         width=256,
         frame_skip=action_repeat,
@@ -95,7 +91,6 @@ def test_dots_sources(distraction):
         distraction_location="background",
         distraction_source=distraction,
         from_pixels=True,
-        visualize_reward=False,
         height=128,
         width=256,
         frame_skip=2,

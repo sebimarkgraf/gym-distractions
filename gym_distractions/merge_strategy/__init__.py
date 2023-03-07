@@ -85,10 +85,3 @@ class FrontAndBackMerge(BaseStrategy):
 
     def get_last_mask(self):
         return self._mask
-
-
-strategies = {
-    "foreground": FrontMerge,
-    "background": BackgroundMerge,
-    "foreandbackground": FrontAndBackMerge,
-}
