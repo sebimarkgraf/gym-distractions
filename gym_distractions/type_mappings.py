@@ -86,10 +86,7 @@ def map_distract_type_to_distractor(
     if distract_type in video_distractors:
         return video_distractors[distract_type]
 
-    raise GymDistractionsTypeError(
-        f"Distractor of type {distract_type} not known. "
-        f"Please choose a distractor type from distractor type enum."
-    )
+    raise GymDistractionsTypeError(f"Distractor of type {distract_type} not known.")
 
 
 class MergeStrategies(str, Enum, metaclass=EnumContainsMeta):
@@ -111,5 +108,7 @@ def map_strategy_config(strategy: Union[MergeStrategies, Type[BaseStrategy]]):
 
     try:
         return strategies[strategy]
-    except KeyError:
-        raise GymDistractionsTypeError("Did not find matching strategy configuration")
+    except KeyError as e:
+        raise GymDistractionsTypeError(
+            "Did not find matching strategy configuration"
+        ) from e

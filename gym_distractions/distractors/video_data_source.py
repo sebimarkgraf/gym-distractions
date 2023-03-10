@@ -14,6 +14,8 @@ import skvideo.io
 import tqdm
 from pytube import YouTube
 
+from gym_distractions.errors import GymDistractionsError
+
 from .background_source import ImageSource
 
 DIFFICULTY_NUM_VIDEOS = dict(easy=4, medium=8, hard=None)
@@ -132,13 +134,13 @@ def get_img_paths(difficulty, data_path: Path, train_or_val=None):
     elif train_or_val in ["val", "validation"]:
         dataset_images = VALIDATION_VIDEOS
     else:
-        raise Exception(f"train_or_val {train_or_val} not defined.")
+        raise GymDistractionsError(f"train_or_val {train_or_val} not defined.")
 
     image_paths = [data_path / subdir.name for subdir in dataset_images]
     random.shuffle(image_paths)
     if num_frames is not None:
         if num_frames > len(image_paths) or num_frames < 0:
-            raise ValueError(
+            raise GymDistractionsError(
                 f"`num_background_paths` is {num_frames} but should "
                 f"not be larger than the number of available "
                 f"background paths ({len(image_paths)}) and at least 0."
@@ -254,7 +256,7 @@ class Kinetics400DataSource(RandomVideoSource):
         elif train_or_val in ["val", "validation", "test"]:
             dataset_images = (data_path / "test").glob("*.mp4")
         else:
-            raise Exception(f"train_or_val {train_or_val} not defined.")
+            raise GymDistractionsError(f"train_or_val {train_or_val} not defined.")
 
         image_paths = list(dataset_images)
         if num_frames is not None:
