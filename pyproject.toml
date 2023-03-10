@@ -14,8 +14,8 @@ dependencies = [
     "numpy",
     "imageio",
     "scikit-video",
-    "pytube @ git+https://github.com/kinshuk-h/pytube",
-    "n-link-simulator @ git+https://github.com/sebimarkgraf/n-link-simulator@main",
+    "pytube",
+    "n-link-simulator >= 0.1.1",
 
 ]
 requires-python = ">=3.8"
