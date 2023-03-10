@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from pathlib import Path
 from typing import Optional, Type, Union
 
@@ -6,6 +7,8 @@ from gymnasium.envs.registration import register
 
 from .distractors import ImageSource
 from .merge_strategy import BaseStrategy
+
+__version__ = version(__package__ or __name__)
 
 register(
     id="deepmind_control-v1",
