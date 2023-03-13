@@ -20,3 +20,10 @@ def test(session):
         "--cov=gym_distractions",
         *session.posargs,
     )
+
+
+@nox.session(python="3.8")
+def docs(session) -> None:
+    """Build the documentation."""
+    session.run("pdm", "sync", "-G", "docs")
+    session.run("sphinx-build", "docs", "docs/_build")

@@ -29,7 +29,7 @@ dev = [
     "pytest-cov",
     "pyinstrument",
     "black",
-    "ruff>=0.0.238",
+    "ruff>=0.0.254",
 ]
 docs = [
     "sphinx>=6.1.3",
@@ -56,8 +56,13 @@ select = [
     "PTH", # flake8-pathlib,
     "T20", # flake8-no-print
     "PD", # pandas-vet
-    "TRY002",
-    "TRY200"
+    "TRY002", # Use own exceptions
+    "TRY200", # Use raise from
+    "TRY400", # Use error instead of exception
+    "PT", # Pytest
+    "SIM", # Simplify
+    "NPY", # Numpy
+    "RUF" # Ruff specific
 ]
 ignore = [
     # Ignore missing docstrings

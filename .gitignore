@@ -10,3 +10,5 @@ venv
 .venv
 .coverage
 coverage.xml
+
+_build/
