@@ -27,4 +27,4 @@ def test(session):
 def docs(session) -> None:
     """Build the documentation."""
     session.run("pdm", "sync", "-G", "docs")
-    session.run("sphinx-build", "docs", "docs/_build")
+    session.run("pdm", "run", "sphinx-build", "docs", "docs/_build")
