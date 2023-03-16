@@ -3,6 +3,7 @@ import nox
 
 @nox.session
 def lint(session):
+    session.run("pdm", "sync", "-d", "-G", "dev", external=True)
     session.install("pre-commit")
     session.run("pre-commit", "run", "--all-files", "--show-diff-on-failure")
 

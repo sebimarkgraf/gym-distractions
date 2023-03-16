@@ -18,7 +18,7 @@ def test_merge_timeseries(strategy):
 
     T = 50
     image_shape = (64, 64, 3)
-    observations = np.random.randn(T, *image_shape)
+    observations = np.random.default_rng().random(size=(T, *image_shape))
     original_obs = observations.copy()
     augmented_obs = strategy.merge_timeseries(observations)
 
@@ -35,7 +35,7 @@ def test_merge(strategy):
     strategy = strategy(source=distractor)
 
     image_shape = (64, 64, 3)
-    observations = np.random.randn(*image_shape)
+    observations = np.random.default_rng().random(size=image_shape)
     original_obs = observations.copy()
     augmented_obs = strategy.merge(observations)
 
