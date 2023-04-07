@@ -339,6 +339,12 @@ requires_python = ">=3.7"
 summary = "Utility library for gitignore style pattern matching of file paths."
 
 [[package]]
+name = "pbr"
+version = "5.11.1"
+requires_python = ">=2.6"
+summary = "Python Build Reasonableness"
+
+[[package]]
 name = "pillow"
 version = "9.4.0"
 requires_python = ">=3.7"
@@ -523,6 +529,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sphinxcontrib-apidoc"
+version = "0.3.0"
+summary = "A Sphinx extension for running 'sphinx-apidoc' on each build"
+dependencies = [
+    "Sphinx>=1.6.0",
+    "pbr",
+]
+
+[[package]]
 name = "sphinxcontrib-applehelp"
 version = "1.0.4"
 requires_python = ">=3.8"
@@ -604,7 +619,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:e2eec8a82a1c07a1c57c5a2e4217bfb3c3b842b49b71d599b92522217baaaea6"
+content_hash = "sha256:a7778aa75cea4b1c8c5b78f225da81509f2fbe1ca280c23efddfc8ef1666cf1e"
 
 [metadata.files]
 "absl-py 1.4.0" = [
@@ -1189,6 +1204,10 @@ content_hash = "sha256:e2eec8a82a1c07a1c57c5a2e4217bfb3c3b842b49b71d599b92522217
     {url = "https://files.pythonhosted.org/packages/e6/be/1a973593d7ce7ac9d1a793b81eb265c152a62f34825169fbd7c4e4548e34/pathspec-0.11.0-py3-none-any.whl", hash = "sha256:3a66eb970cbac598f9e5ccb5b2cf58930cd8e3ed86d393d541eaf2d8b1705229"},
     {url = "https://files.pythonhosted.org/packages/f4/8e/f91cffb32740b251cff04cad1e7cdd2c710582c735a01f56307316c148f2/pathspec-0.11.0.tar.gz", hash = "sha256:64d338d4e0914e91c1792321e6907b5a593f1ab1851de7fc269557a21b30ebbc"},
 ]
+"pbr 5.11.1" = [
+    {url = "https://files.pythonhosted.org/packages/01/06/4ab11bf70db5a60689fc521b636849c8593eb67a2c6bdf73a16c72d16a12/pbr-5.11.1-py2.py3-none-any.whl", hash = "sha256:567f09558bae2b3ab53cb3c1e2e33e726ff3338e7bae3db5dc954b3a44eef12b"},
+    {url = "https://files.pythonhosted.org/packages/02/d8/acee75603f31e27c51134a858e0dea28d321770c5eedb9d1d673eb7d3817/pbr-5.11.1.tar.gz", hash = "sha256:aefc51675b0b533d56bb5fd1c8c6c0522fe31896679882e1c4c63d5e4a0fccb3"},
+]
 "pillow 9.4.0" = [
     {url = "https://files.pythonhosted.org/packages/06/50/fd98b6be293b96b02ca0dca15939e8e8d0c7f71d731e9b93e6403487911f/Pillow-9.4.0-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:94cdff45173b1919350601f82d61365e792895e3c3a3443cf99819e6fbf717a5"},
     {url = "https://files.pythonhosted.org/packages/09/f3/213bc3f14041002f871837a3130a66cda3b4a2b22b0be9da6fc7a7346a0d/Pillow-9.4.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bd752c5ff1b4a870b7661234694f24b1d2b9076b8bf337321a814c612665f343"},
@@ -1483,6 +1502,10 @@ content_hash = "sha256:e2eec8a82a1c07a1c57c5a2e4217bfb3c3b842b49b71d599b92522217
 "sphinx-autodoc-typehints 1.22" = [
     {url = "https://files.pythonhosted.org/packages/9c/fe/3f7b14afe895f6d3abb168d451c785527489b24cad21c765a59d0f4f4f74/sphinx_autodoc_typehints-1.22.tar.gz", hash = "sha256:71fca2d5eee9b034204e4c686ab20b4d8f5eb9409396216bcae6c87c38e18ea6"},
     {url = "https://files.pythonhosted.org/packages/bd/c7/b0420587d02468ca65669f9084f1c69f07cce14c115dc843c3c76a5fd62a/sphinx_autodoc_typehints-1.22-py3-none-any.whl", hash = "sha256:ef4a8b9d52de66065aa7d3adfabf5a436feb8a2eff07c2ddc31625d8807f2b69"},
+]
+"sphinxcontrib-apidoc 0.3.0" = [
+    {url = "https://files.pythonhosted.org/packages/57/55/23f6919551a5e0a824f0effc3a85dd1cbc8df225196c0f6b82c7cea38299/sphinxcontrib-apidoc-0.3.0.tar.gz", hash = "sha256:729bf592cf7b7dd57c4c05794f732dc026127275d785c2a5494521fdde773fb9"},
+    {url = "https://files.pythonhosted.org/packages/60/8d/a426a9f7f9ffc8e02d377ca82e3f005817ccf0141b85dbb8653aad13901b/sphinxcontrib_apidoc-0.3.0-py2.py3-none-any.whl", hash = "sha256:6671a46b2c6c5b0dca3d8a147849d159065e50443df79614f921b42fbd15cb09"},
 ]
 "sphinxcontrib-applehelp 1.0.4" = [
     {url = "https://files.pythonhosted.org/packages/06/c1/5e2cafbd03105ce50d8500f9b4e8a6e8d02e22d0475b574c3b3e9451a15f/sphinxcontrib_applehelp-1.0.4-py3-none-any.whl", hash = "sha256:29d341f67fb0f6f586b23ad80e072c8e6ad0b48417db2bde114a4c9746feb228"},
