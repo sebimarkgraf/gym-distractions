@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Tuple
 
 import numpy as np
-from gym.utils.seeding import np_random
+from gymnasium.utils.seeding import np_random
 
 
 class ImageSource(object, metaclass=ABCMeta):
