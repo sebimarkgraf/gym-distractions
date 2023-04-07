@@ -2,7 +2,7 @@
 
 [project]
 name = "gym-distractions"
-version = "0.1.0"
+version = "0.1.1"
 description = "Environment with different disk dynamics for distractions in RL environments"
 authors = [
     {name = "Sebastian Markgraf", email = "Sebastian-Markgraf@t-online.de"},
