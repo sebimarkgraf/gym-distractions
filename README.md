@@ -76,5 +76,12 @@ Based on work of:
 ## Citing This Work
 If you find this work helpful, please cite the corresponding publication
 ``` bibtex
-TODO
+@software{gym_distractions,
+  author = {Markgraf, Sebastian and Becker, Philipp and Wei, Yiping and Yang, Yitian},
+  month = {09},
+  title = {{Gym Distractions}},
+  url = { https://github.com/sebimarkgraf/gym-distraction},
+  version = {0.1.1},
+  year = {2023}
+}
 ```
